@@ -25,7 +25,7 @@ Siga o [DEPLOY_GITHUB.md](DEPLOY_GITHUB.md). Repositório:
 3. Em *Framework Preset* deixe **Other**. Não preencha *Build Command*.
    O `vercel.json` do projeto já define tudo:
    - `outputDirectory: frontend` → as telas são servidas pela CDN
-   - a função `api/index.js` → toda a API (e as telas, como reserva)
+   - as funções em `api/` → toda a API
    - o cron diário → `/api/cron`
 4. Clique em **Deploy**.
 

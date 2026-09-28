@@ -2,15 +2,12 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "outputDirectory": "frontend",
   "functions": {
-    "api/index.js": {
+    "api/**": {
       "memory": 1024,
       "maxDuration": 30,
       "includeFiles": "frontend/**"
     }
   },
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/api" }
-  ],
   "crons": [
     { "path": "/api/cron", "schedule": "0 9 * * *" }
   ]
