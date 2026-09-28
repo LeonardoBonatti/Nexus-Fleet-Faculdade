@@ -273,8 +273,21 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
             });
-            const data = await res.json().catch(() => ({}));
-            return { ok: res.ok, data };
+            // Quando a resposta não é JSON (página de erro da hospedagem, timeout,
+            // rota inexistente) o corpo é guardado para a mensagem ficar útil.
+            const text = await res.text();
+            let data;
+            try { data = text ? JSON.parse(text) : {}; } catch (e) { data = { _raw: text }; }
+            return { ok: res.ok, status: res.status, data };
+        }
+
+        // Mensagem de erro que nunca esconde o que aconteceu de fato
+        function failureMessage(fallback, status, data) {
+            if (data && data.error) return data.error;
+            const detail = status ? `HTTP ${status}` : 'sem resposta';
+            if (status === 404) return `${fallback} A API não respondeu neste endereço (${detail}).`;
+            if (status === 504 || status === 408) return `${fallback} O servidor demorou demais para responder (${detail}).`;
+            return `${fallback} (${detail})`;
         }
 
         // LOGIN
@@ -289,8 +302,8 @@
 
             setLoading(form, true, 'Entrando...');
             try {
-                const { ok, data } = await postJSON('/api/users/login', { email, password });
-                if (!ok) return showMessage('loginMessage', data.error || 'Não foi possível entrar.');
+                const { ok, status, data } = await postJSON('/api/users/login', { email, password });
+                if (!ok) return showMessage('loginMessage', failureMessage('Não foi possível entrar.', status, data));
 
                 localStorage.setItem('fcs_auth', data.data.token);
                 localStorage.setItem('fcs_username', data.data.user.name);
@@ -320,8 +333,8 @@
 
             setLoading(form, true, 'Criando conta...');
             try {
-                const { ok, data } = await postJSON('/api/users/register', { name, email, password, cargo, company_name: document.getElementById('regCompany').value.trim() });
-                if (!ok) return showMessage('registerMessage', data.error || 'Não foi possível criar a conta.');
+                const { ok, status, data } = await postJSON('/api/users/register', { name, email, password, cargo, company_name: document.getElementById('regCompany').value.trim() });
+                if (!ok) return showMessage('registerMessage', failureMessage('Não foi possível criar a conta.', status, data));
 
                 form.reset();
                 updateStrength('');
