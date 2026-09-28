@@ -1,0 +1,40 @@
+<!-- diagnostico.html -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Diagnóstico</h1>
+        <p class="page-subtitle">Componentes fora do intervalo recomendado de manutenção, ordenados por urgência.</p>
+    </div>
+    <div class="page-actions">
+        <button class="btn btn-primary" onclick="navigateTo('manutencao')"><i class="fa-solid fa-plus"></i> Registrar manutenção</button>
+    </div>
+</div>
+
+<div class="stack">
+    <div class="grid grid-3">
+        <div class="kpi tone-danger">
+            <div class="kpi-top"><span class="kpi-label">Alertas críticos</span><span class="kpi-icon"><i class="fa-solid fa-triangle-exclamation"></i></span></div>
+            <div class="kpi-value" id="diagCritical">—</div>
+            <div class="kpi-meta">Vida útil abaixo de 30%</div>
+        </div>
+        <div class="kpi tone-warning">
+            <div class="kpi-top"><span class="kpi-label">Alertas de atenção</span><span class="kpi-icon"><i class="fa-solid fa-circle-exclamation"></i></span></div>
+            <div class="kpi-value" id="diagWarning">—</div>
+            <div class="kpi-meta">Vida útil entre 30% e 65%</div>
+        </div>
+        <div class="kpi">
+            <div class="kpi-top"><span class="kpi-label">Veículos afetados</span><span class="kpi-icon"><i class="fa-solid fa-car-burst"></i></span></div>
+            <div class="kpi-value" id="diagVehicles">—</div>
+            <div class="kpi-meta" id="diagVehiclesInfo"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Alertas ativos</div>
+            <span class="badge" id="diagCount">—</span>
+        </div>
+        <div id="alertasContent">
+            <div class="page-loading"><span class="spinner"></span> Analisando...</div>
+        </div>
+    </div>
+</div>

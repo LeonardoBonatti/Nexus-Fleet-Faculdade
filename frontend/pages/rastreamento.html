@@ -1,0 +1,53 @@
+<!-- rastreamento.html — RF07 -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Rastreamento em tempo real</h1>
+        <p class="page-subtitle">Posição dos veículos enviada pelo GPS do motorista durante a viagem. Atualização automática a cada 10 segundos.</p>
+    </div>
+    <div class="page-actions">
+        <span class="badge badge-success badge-dot" id="trkUpdated">Conectando...</span>
+    </div>
+</div>
+
+<div class="stack">
+    <div class="grid grid-3">
+        <div class="kpi">
+            <div class="kpi-top"><span class="kpi-label">Veículos em viagem</span><span class="kpi-icon"><i class="fa-solid fa-diamond-turn-right"></i></span></div>
+            <div class="kpi-value" id="trkInTrip">—</div>
+        </div>
+        <div class="kpi tone-success">
+            <div class="kpi-top"><span class="kpi-label">Sinal recente (≤ 60 s)</span><span class="kpi-icon"><i class="fa-solid fa-satellite-dish"></i></span></div>
+            <div class="kpi-value" id="trkOnline">—</div>
+        </div>
+        <div class="kpi tone-warning">
+            <div class="kpi-top"><span class="kpi-label">Em viagem sem sinal recente</span><span class="kpi-icon"><i class="fa-solid fa-signal"></i></span></div>
+            <div class="kpi-value" id="trkStale">—</div>
+        </div>
+    </div>
+
+    <div class="tracking-layout">
+        <div class="card">
+            <div class="card-header">
+                <div class="search" style="min-width: 0; width: 100%;">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="search" id="trackSearch" placeholder="Buscar placa ou motorista" aria-label="Buscar veículo">
+                </div>
+            </div>
+            <div class="tracking-list" id="trackList">
+                <div class="page-loading" style="padding: 32px;"><span class="spinner"></span></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Mapa da frota</div>
+                <div class="map-legend">
+                    <span><i style="background: #2563eb;"></i> Em viagem</span>
+                    <span><i style="background: #16a34a;"></i> Disponível</span>
+                    <span><i style="background: #f59e0b;"></i> Manutenção</span>
+                </div>
+            </div>
+            <div id="trackMap" class="map" style="height: 640px;"></div>
+        </div>
+    </div>
+</div>

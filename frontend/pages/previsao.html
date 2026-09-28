@@ -1,0 +1,68 @@
+<!-- previsao.html -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Previsão de gastos</h1>
+        <p class="page-subtitle">Projeção dos próximos 3 meses por regressão linear sobre os gastos dos últimos 6 meses.</p>
+    </div>
+</div>
+
+<div class="stack">
+    <div class="grid grid-3">
+        <div class="kpi">
+            <div class="kpi-top"><span class="kpi-label">Previsto para o próximo mês</span><span class="kpi-icon"><i class="fa-solid fa-calendar-day"></i></span></div>
+            <div class="kpi-value" id="prevMensal">—</div>
+            <div class="kpi-meta" id="prevBase"></div>
+        </div>
+        <div class="kpi tone-violet">
+            <div class="kpi-top"><span class="kpi-label">Projeção trimestral</span><span class="kpi-icon"><i class="fa-solid fa-chart-column"></i></span></div>
+            <div class="kpi-value" id="prevTrimestral">—</div>
+            <div class="kpi-meta" id="prevTrend"></div>
+        </div>
+        <button class="kpi tone-warning" onclick="navigateTo('diagnostico')">
+            <div class="kpi-top"><span class="kpi-label">Próxima manutenção prevista</span><span class="kpi-icon"><i class="fa-solid fa-screwdriver-wrench"></i></span></div>
+            <div class="kpi-value" id="prevRisk" style="font-size: 18px;">—</div>
+            <div class="kpi-meta" id="prevRiskInfo"></div>
+        </button>
+    </div>
+
+    <div class="grid grid-main">
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Realizado × projeção</div>
+                    <div class="card-subtitle">Combustível + manutenção</div>
+                </div>
+                <div class="legend-inline">
+                    <span><i style="background: #3b82f6;"></i> Realizado</span>
+                    <span><i style="background: #f59e0b;"></i> Projeção</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-box"><canvas id="forecastChart" role="img" aria-label="Gráfico de gastos realizados e projetados"></canvas></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Valores por mês</div>
+            </div>
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Mês</th>
+                            <th>Tipo</th>
+                            <th class="num">Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody id="prevTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="callout">
+        <i class="fa-solid fa-circle-info"></i>
+        <span>A projeção melhora conforme mais meses são registrados. Com menos de 2 meses de dados, o resultado deve ser visto apenas como referência.</span>
+    </div>
+</div>

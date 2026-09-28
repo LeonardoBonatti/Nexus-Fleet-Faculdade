@@ -1,0 +1,53 @@
+<!-- ocorrencias.html — Motorista reporta ocorrências -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Ocorrências</h1>
+        <p class="page-subtitle">Avarias, panes e acidentes reportados pelos motoristas e o tratamento dado pelo gestor.</p>
+    </div>
+    <div class="page-actions">
+        <button class="btn btn-primary" onclick="openOccurrenceModal()"><i class="fa-solid fa-plus"></i> Reportar ocorrência</button>
+    </div>
+</div>
+
+<div class="stack">
+    <div class="grid grid-3">
+        <div class="kpi tone-warning">
+            <div class="kpi-top"><span class="kpi-label">Abertas</span><span class="kpi-icon"><i class="fa-solid fa-folder-open"></i></span></div>
+            <div class="kpi-value" id="occOpen">—</div>
+        </div>
+        <div class="kpi tone-danger">
+            <div class="kpi-top"><span class="kpi-label">Alta gravidade (abertas)</span><span class="kpi-icon"><i class="fa-solid fa-triangle-exclamation"></i></span></div>
+            <div class="kpi-value" id="occHigh">—</div>
+        </div>
+        <div class="kpi tone-success">
+            <div class="kpi-top"><span class="kpi-label">Resolvidas</span><span class="kpi-icon"><i class="fa-solid fa-circle-check"></i></span></div>
+            <div class="kpi-value" id="occResolved">—</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Ocorrências</div>
+            <div class="search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" id="tableSearch" placeholder="Buscar por placa, tipo ou descrição" aria-label="Buscar ocorrências">
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Data e hora</th>
+                        <th>Veículo</th>
+                        <th>Motorista</th>
+                        <th>Tipo</th>
+                        <th>Descrição</th>
+                        <th>Situação</th>
+                        <th class="actions"></th>
+                    </tr>
+                </thead>
+                <tbody id="occLogBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>

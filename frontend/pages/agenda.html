@@ -1,0 +1,52 @@
+<!-- agenda.html -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Agenda</h1>
+        <p class="page-subtitle">Prazos de IPVA, licenciamento, seguros e revisões. Itens vencidos ou que vencem em até 7 dias são destacados.</p>
+    </div>
+</div>
+
+<div class="grid grid-side">
+    <div class="card" style="align-self: start;">
+        <div class="card-header">
+            <div>
+                <div class="card-title">Novo compromisso</div>
+                <div class="card-subtitle">Adicione um prazo para acompanhar.</div>
+            </div>
+        </div>
+        <form id="reminderForm" class="card-body" novalidate>
+            <div class="form-grid cols-1">
+                <div class="field">
+                    <label for="reminderTitle">Título<span class="req">*</span></label>
+                    <input type="text" name="title" id="reminderTitle" maxlength="120" placeholder="Ex.: Renovação do seguro" required>
+                </div>
+                <div class="field">
+                    <label for="reminderDate">Data limite<span class="req">*</span></label>
+                    <input type="date" name="date" id="reminderDate" required>
+                </div>
+                <div class="field">
+                    <label for="reminderDesc">Descrição <span class="opt">(opcional)</span></label>
+                    <textarea name="desc" id="reminderDesc" maxlength="255" placeholder="Ex.: Apólice nº 9987 — veículo ABC1D23"></textarea>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-block"><i class="fa-solid fa-calendar-plus"></i> Agendar</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Compromissos</div>
+            <div class="segmented" role="tablist">
+                <button id="btnAgendaPending" class="btn-agenda-tab active" role="tab" onclick="switchAgendaTab('pending')">
+                    Pendentes <span class="seg-count" id="agendaPendingCount">0</span>
+                </button>
+                <button id="btnAgendaCompleted" class="btn-agenda-tab" role="tab" onclick="switchAgendaTab('completed')">
+                    Concluídos <span class="seg-count" id="agendaDoneCount">0</span>
+                </button>
+            </div>
+        </div>
+        <div id="agendaTimeline"></div>
+    </div>
+</div>

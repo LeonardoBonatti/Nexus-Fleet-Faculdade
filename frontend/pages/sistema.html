@@ -1,0 +1,91 @@
+<!-- sistema.html — RNF01 / RNF02 / RNF03 -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Status do sistema</h1>
+        <p class="page-subtitle">Disponibilidade, tempo de resposta e segurança. <span id="sysCounts"></span></p>
+    </div>
+    <div class="page-actions">
+        <a class="btn btn-secondary" href="/api/system/health" target="_blank" rel="noopener"><i class="fa-solid fa-heart-pulse"></i> Health check</a>
+    </div>
+</div>
+
+<div class="stack">
+    <div class="grid grid-4">
+        <div class="kpi tone-success">
+            <div class="kpi-top"><span class="kpi-label">Disponibilidade (30 dias)</span><span class="kpi-icon"><i class="fa-solid fa-signal"></i></span></div>
+            <div class="kpi-value" id="sysAvailability">—</div>
+            <div class="kpi-meta" id="sysAvailabilityInfo"></div>
+        </div>
+        <div class="kpi">
+            <div class="kpi-top"><span class="kpi-label">Tempo de resposta médio</span><span class="kpi-icon"><i class="fa-solid fa-stopwatch"></i></span></div>
+            <div class="kpi-value" id="sysAvg">—</div>
+            <div class="kpi-meta" id="sysAvgInfo"></div>
+        </div>
+        <div class="kpi tone-violet">
+            <div class="kpi-top"><span class="kpi-label">Em execução há</span><span class="kpi-icon"><i class="fa-solid fa-server"></i></span></div>
+            <div class="kpi-value" id="sysUptime" style="font-size: 20px;">—</div>
+            <div class="kpi-meta" id="sysUptimeInfo"></div>
+        </div>
+        <div class="kpi tone-danger">
+            <div class="kpi-top"><span class="kpi-label">Requisições acima de 3 s</span><span class="kpi-icon"><i class="fa-solid fa-hourglass-end"></i></span></div>
+            <div class="kpi-value" id="sysSlow">—</div>
+            <div class="kpi-meta">Últimas 500 requisições</div>
+        </div>
+    </div>
+
+    <div class="grid grid-main">
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Teste de listagem (RNF01)</div>
+                    <div class="card-subtitle">Mede no navegador o tempo das principais consultas (3 execuções cada). Meta: até 3 segundos.</div>
+                </div>
+                <button class="btn btn-primary btn-sm" id="sysPerfBtn" onclick="runListingTest()"><i class="fa-solid fa-play"></i> Executar teste</button>
+            </div>
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Listagem</th>
+                            <th class="num">Registros</th>
+                            <th class="num">Tempo médio</th>
+                            <th>Resultado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sysPerfBody">
+                        <tr class="table-empty"><td colspan="4"><div class="empty-state" style="padding: 20px;"><div class="empty-icon"><i class="fa-solid fa-stopwatch"></i></div><p>Clique em "Executar teste".</p></div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Segurança (RNF03)</div>
+            </div>
+            <div class="list" id="sysSecurity"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <div class="card-title">Endpoints mais lentos</div>
+                <div class="card-subtitle">Cada resposta da API também informa seu tempo no cabeçalho X-Response-Time.</div>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Endpoint</th>
+                        <th class="num">Chamadas</th>
+                        <th class="num">Média</th>
+                        <th class="num">Máximo</th>
+                    </tr>
+                </thead>
+                <tbody id="sysEndpoints"></tbody>
+            </table>
+        </div>
+    </div>
+</div>

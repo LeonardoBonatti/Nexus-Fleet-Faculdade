@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusFleet | Gestão de Frota</title>
+    <meta name="theme-color" content="#0b1220">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232563eb'/%3E%3Cpath d='M9 22V10h3l8 8v-8h3v12h-3l-8-8v8z' fill='white'/%3E%3C/svg%3E">
+
+    <script>
+        // Auth Guard: exige um JWT válido e não expirado antes de carregar o painel
+        (function () {
+            let valid = false;
+            try {
+                const token = localStorage.getItem('fcs_auth');
+                const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+                valid = !payload.exp || payload.exp * 1000 > Date.now();
+            } catch (e) { valid = false; }
+            if (!valid) {
+                localStorage.removeItem('fcs_auth');
+                window.location.replace('login.html');
+            }
+        })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css">
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        body { top: 0 !important; }
+        .goog-te-banner-frame, div#goog-gt-tt, .goog-tooltip { display: none !important; }
+        .goog-text-highlight { background: transparent !important; border: none !important; box-shadow: none !important; }
+    </style>
+</head>
+<body>
+    <script>
+        if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+        if (localStorage.getItem('fcs_sidebar_collapsed') === '1') document.body.classList.add('sidebar-collapsed');
+    </script>
+
+    <div class="app" id="app">
+        <!-- ================= SIDEBAR (itens exibidos conforme o perfil — RF14) ================= -->
+        <aside class="sidebar" id="sidebar" aria-label="Menu principal">
+            <div class="sidebar-brand">
+                <div class="brand-mark"><i class="fa-solid fa-route"></i></div>
+                <div class="brand-name">Nexus<span>Fleet</span></div>
+            </div>
+
+            <div class="sidebar-search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" id="menuSearch" placeholder="Buscar no menu" aria-label="Buscar no menu" oninput="filterMenu()">
+            </div>
+
+            <nav class="sidebar-nav" id="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Visão geral</div>
+                    <a class="nav-link" href="#dashboard" data-page="dashboard" data-roles="admin,gestor,financeiro" title="Dashboard"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a>
+                    <a class="nav-link" href="#assistente" data-page="assistente" data-roles="admin,gestor,financeiro" title="Assistente"><i class="fa-solid fa-wand-magic-sparkles"></i><span>Assistente</span></a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Operação</div>
+                    <a class="nav-link" href="#viagens" data-page="viagens" title="Viagens"><i class="fa-solid fa-diamond-turn-right"></i><span id="navTripsLabel">Viagens</span></a>
+                    <a class="nav-link" href="#veiculos" data-page="veiculos" data-roles="admin,gestor,financeiro" title="Veículos"><i class="fa-solid fa-car-side"></i><span>Veículos</span></a>
+                    <a class="nav-link" href="#motoristas" data-page="motoristas" data-roles="admin,gestor,financeiro" title="Motoristas"><i class="fa-solid fa-id-card"></i><span>Motoristas</span></a>
+                    <a class="nav-link" href="#abastecimento" data-page="abastecimento" title="Abastecimentos"><i class="fa-solid fa-gas-pump"></i><span>Abastecimentos</span></a>
+                    <a class="nav-link" href="#manutencao" data-page="manutencao" data-roles="admin,gestor,financeiro" title="Manutenções"><i class="fa-solid fa-screwdriver-wrench"></i><span>Manutenções</span></a>
+                    <a class="nav-link" href="#ocorrencias" data-page="ocorrencias" data-roles="admin,gestor,motorista" title="Ocorrências"><i class="fa-solid fa-circle-exclamation"></i><span>Ocorrências</span></a>
+                </div>
+
+                <div class="nav-section" data-roles="admin,gestor,financeiro">
+                    <div class="nav-section-title">Monitoramento</div>
+                    <a class="nav-link" href="#rastreamento" data-page="rastreamento" data-roles="admin,gestor" title="Rastreamento"><i class="fa-solid fa-location-crosshairs"></i><span>Rastreamento</span></a>
+                    <a class="nav-link" href="#saude" data-page="saude" data-roles="admin,gestor,financeiro" title="Saúde da Frota"><i class="fa-solid fa-heart-pulse"></i><span>Saúde da Frota</span></a>
+                    <a class="nav-link" href="#diagnostico" data-page="diagnostico" data-roles="admin,gestor,financeiro" title="Diagnóstico"><i class="fa-solid fa-stethoscope"></i><span>Diagnóstico</span><span class="nav-badge" id="navAlertBadge" hidden>0</span></a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Documentação</div>
+                    <a class="nav-link" href="#documentos" data-page="documentos" data-roles="admin,gestor,financeiro" title="Documentos"><i class="fa-solid fa-file-shield"></i><span>Documentos</span></a>
+                    <a class="nav-link" href="#multas" data-page="multas" title="Multas"><i class="fa-solid fa-receipt"></i><span>Multas</span></a>
+                    <a class="nav-link" href="#agenda" data-page="agenda" data-roles="admin,gestor,financeiro" title="Agenda"><i class="fa-solid fa-calendar-check"></i><span>Agenda</span></a>
+                </div>
+
+                <div class="nav-section" data-roles="admin,gestor,financeiro">
+                    <div class="nav-section-title">Análises</div>
+                    <a class="nav-link" href="#relatorios" data-page="relatorios" title="Relatórios de custos"><i class="fa-solid fa-file-invoice-dollar"></i><span>Relatórios de custos</span></a>
+                    <a class="nav-link" href="#financeiro" data-page="financeiro" title="Financeiro"><i class="fa-solid fa-wallet"></i><span>Financeiro</span></a>
+                    <a class="nav-link" href="#historico" data-page="historico" title="Histórico"><i class="fa-solid fa-clock-rotate-left"></i><span>Histórico</span></a>
+                    <a class="nav-link" href="#comparador" data-page="comparador" title="Eficiência"><i class="fa-solid fa-gauge-high"></i><span>Eficiência</span></a>
+                    <a class="nav-link" href="#previsao" data-page="previsao" title="Previsão de Gastos"><i class="fa-solid fa-chart-line"></i><span>Previsão de Gastos</span></a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Logística</div>
+                    <a class="nav-link" href="#mapa_postos" data-page="mapa_postos" title="Mapa de Postos"><i class="fa-solid fa-map-location-dot"></i><span>Mapa de Postos</span></a>
+                </div>
+
+                <div class="nav-section" data-roles="admin,gestor">
+                    <div class="nav-section-title">Administração</div>
+                    <a class="nav-link" href="#usuarios" data-page="usuarios" data-roles="admin" title="Usuários e perfis"><i class="fa-solid fa-users-gear"></i><span>Usuários e perfis</span></a>
+                    <a class="nav-link" href="#auditoria" data-page="auditoria" data-roles="admin" title="Auditoria"><i class="fa-solid fa-list-check"></i><span>Auditoria</span></a>
+                    <a class="nav-link" href="#sistema" data-page="sistema" data-roles="admin" title="Status do sistema"><i class="fa-solid fa-server"></i><span>Status do sistema</span></a>
+                    <a class="nav-link" href="#" data-action="trash" data-roles="admin,gestor" title="Lixeira"><i class="fa-solid fa-trash-can"></i><span>Lixeira</span></a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-user">
+                    <img id="sidebarAvatar" src="" alt="">
+                    <div class="sidebar-user-info">
+                        <div class="sidebar-user-name" id="sidebarUserName">Usuário</div>
+                        <div class="sidebar-user-role" id="sidebarUserRole">—</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+        <!-- ================= ÁREA PRINCIPAL ================= -->
+        <main class="main">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button id="toggleSidebar" class="icon-btn" aria-label="Mostrar/ocultar menu"><i class="fa-solid fa-bars-staggered"></i></button>
+                    <nav class="breadcrumb" aria-label="Você está em">
+                        <span id="breadcrumbSection">Visão geral</span>
+                        <i class="fa-solid fa-chevron-right"></i>
+                        <span class="breadcrumb-current" id="breadcrumbTitle">Carregando</span>
+                    </nav>
+                </div>
+
+                <div class="topbar-actions">
+                    <!-- Notificações (RF05 / RF13) -->
+                    <div class="user-menu">
+                        <button id="notificationsBtn" class="icon-btn" title="Notificações" aria-label="Notificações" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa-regular fa-bell"></i>
+                            <span class="count-badge" id="topbarAlertBadge" hidden>0</span>
+                        </button>
+                        <div id="notificationsPanel" class="dropdown notif-panel" role="dialog" aria-label="Notificações">
+                            <div class="notif-header">
+                                <strong>Notificações</strong>
+                                <div class="row" style="gap: 4px;">
+                                    <button class="btn btn-ghost btn-sm" onclick="runNotificationCheck()" data-roles="admin,gestor" title="Verificar alertas agora"><i class="fa-solid fa-rotate"></i></button>
+                                    <button class="btn btn-ghost btn-sm" onclick="markAllNotificationsRead()">Marcar todas como lidas</button>
+                                </div>
+                            </div>
+                            <div class="notif-list" id="notificationsList"></div>
+                        </div>
+                    </div>
+
+                    <button id="themeToggle" class="icon-btn" title="Alternar tema" aria-label="Alternar tema"><i class="fa-regular fa-moon"></i></button>
+                    <div class="topbar-divider"></div>
+
+                    <div class="user-menu">
+                        <button class="user-trigger" id="userProfileBtn" aria-haspopup="true" aria-expanded="false">
+                            <img id="userAvatar" src="" alt="Foto do usuário">
+                            <span class="user-trigger-name" id="userNameDisplay">Usuário</span>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+
+                        <div id="profileMenu" class="dropdown" role="menu">
+                            <div class="dropdown-header">
+                                <img id="dropdownAvatar" src="" alt="">
+                                <div class="dropdown-header-info">
+                                    <strong id="dropdownName">Usuário</strong>
+                                    <span id="dropdownEmail"></span>
+                                    <span id="dropdownCompany" class="text-subtle"></span>
+                                    <span class="badge badge-primary" id="dropdownRole" style="margin-top: 6px;">—</span>
+                                </div>
+                            </div>
+                            <button class="dropdown-item" onclick="openProfileModal('settingsModal')"><i class="fa-regular fa-user"></i> Minha conta</button>
+                            <button class="dropdown-item" onclick="document.getElementById('avatarUpload').click()"><i class="fa-regular fa-image"></i> Alterar foto</button>
+                            <button class="dropdown-item" onclick="openProfileModal('langModal')"><i class="fa-solid fa-language"></i> Idioma <span class="kbd" id="currentLangDropdown">PT-BR</span></button>
+                            <button class="dropdown-item" data-roles="admin,gestor" onclick="openProfileModal('trashModal')"><i class="fa-regular fa-trash-can"></i> Lixeira</button>
+                            <button class="dropdown-item" onclick="openProfileModal('helpSupportModal')"><i class="fa-regular fa-circle-question"></i> Ajuda e suporte</button>
+                            <div class="dropdown-divider"></div>
+                            <button class="dropdown-item danger" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</button>
+                        </div>
+                        <input type="file" id="avatarUpload" accept="image/*" hidden>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Telas carregadas dinamicamente pelo roteador (app.js) -->
+            <div class="page-container" id="pageContainer"></div>
+        </main>
+    </div>
+
+    <!-- ================= MODAL: Minha conta ================= -->
+    <div id="settingsModal" class="modal-overlay" onclick="closeProfileModalOnBg(event, 'settingsModal')">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title" id="settingsTitle">Minha conta</h3>
+                    <p class="modal-subtitle">Atualize seus dados de perfil e sua senha de acesso.</p>
+                </div>
+                <button class="btn-icon" onclick="closeProfileModal('settingsModal')" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid cols-1">
+                    <div class="form-section-title">Perfil</div>
+                    <div class="field">
+                        <label for="settingNameInput">Nome</label>
+                        <input type="text" id="settingNameInput" maxlength="100" placeholder="Seu nome" autocomplete="name">
+                    </div>
+                    <div class="field">
+                        <label for="settingRoleInput">Cargo</label>
+                        <input type="text" id="settingRoleInput" maxlength="100" placeholder="Ex: Analista de Frota">
+                    </div>
+                    <div class="row" style="justify-content: flex-end;">
+                        <button class="btn btn-primary btn-sm" onclick="saveProfileSettings()"><i class="fa-solid fa-check"></i> Salvar perfil</button>
+                    </div>
+
+                    <div class="form-section-title divided">Segurança</div>
+                    <div class="field">
+                        <label for="currentPasswordInput">Senha atual</label>
+                        <input type="password" id="currentPasswordInput" autocomplete="current-password">
+                    </div>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="newPasswordInput">Nova senha</label>
+                            <input type="password" id="newPasswordInput" minlength="8" autocomplete="new-password" placeholder="Mínimo 8 caracteres">
+                        </div>
+                        <div class="field">
+                            <label for="confirmPasswordInput">Confirmar nova senha</label>
+                            <input type="password" id="confirmPasswordInput" minlength="8" autocomplete="new-password">
+                        </div>
+                    </div>
+                    <div class="row" style="justify-content: flex-end;">
+                        <button class="btn btn-secondary btn-sm" onclick="changePassword()"><i class="fa-solid fa-lock"></i> Alterar senha</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: Idioma ================= -->
+    <div id="langModal" class="modal-overlay" onclick="closeProfileModalOnBg(event, 'langModal')">
+        <div class="modal modal-sm" role="dialog" aria-modal="true" aria-labelledby="langTitle">
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title" id="langTitle">Idioma</h3>
+                    <p class="modal-subtitle">Tradução automática via Google Tradutor.</p>
+                </div>
+                <button class="btn-icon" onclick="closeProfileModal('langModal')" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="lang-grid">
+                    <button class="lang-btn" data-lang="PT-BR" onclick="changeLang('PT-BR')">Português (BR)</button>
+                    <button class="lang-btn" data-lang="EN" onclick="changeLang('EN')">English</button>
+                    <button class="lang-btn" data-lang="ES" onclick="changeLang('ES')">Español</button>
+                    <button class="lang-btn" data-lang="FR" onclick="changeLang('FR')">Français</button>
+                    <button class="lang-btn" data-lang="IT" onclick="changeLang('IT')">Italiano</button>
+                    <button class="lang-btn" data-lang="DE" onclick="changeLang('DE')">Deutsch</button>
+                    <button class="lang-btn" data-lang="JA" onclick="changeLang('JA')">日本語</button>
+                    <button class="lang-btn" data-lang="ZH" onclick="changeLang('ZH')">中文</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: Suporte ================= -->
+    <div id="helpSupportModal" class="modal-overlay" onclick="closeProfileModalOnBg(event, 'helpSupportModal')">
+        <div class="modal modal-sm" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title" id="helpTitle">Ajuda e suporte</h3>
+                    <p class="modal-subtitle">Fale com a equipe responsável pelo sistema.</p>
+                </div>
+                <button class="btn-icon" onclick="closeProfileModal('helpSupportModal')" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="list">
+                <div class="list-item">
+                    <div class="list-icon success"><i class="fa-brands fa-whatsapp"></i></div>
+                    <div class="list-content"><div class="list-title">(19) 98203-4147</div><div class="list-sub">WhatsApp</div></div>
+                </div>
+                <div class="list-item">
+                    <div class="list-icon success"><i class="fa-brands fa-whatsapp"></i></div>
+                    <div class="list-content"><div class="list-title">(19) 99665-8075</div><div class="list-sub">WhatsApp</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: Lixeira ================= -->
+    <div id="trashModal" class="modal-overlay" onclick="closeProfileModalOnBg(event, 'trashModal')">
+        <div class="modal modal-lg" role="dialog" aria-modal="true" aria-labelledby="trashTitle">
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title" id="trashTitle"><i class="fa-regular fa-trash-can text-danger"></i> Lixeira</h3>
+                    <p class="modal-subtitle">Registros excluídos podem ser restaurados ou apagados definitivamente.</p>
+                </div>
+                <button class="btn-icon" onclick="closeProfileModal('trashModal')" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="table-wrap" style="max-height: 420px; overflow: auto;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Detalhes</th>
+                            <th>Excluído em</th>
+                            <th class="actions"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="trashLogBody"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <span class="modal-footer-note">A exclusão definitiva não pode ser desfeita.</span>
+                <button id="btnEmptyTrash" class="btn btn-danger-soft btn-sm" onclick="emptyTrash()" hidden><i class="fa-solid fa-dumpster"></i> Esvaziar lixeira</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bibliotecas externas (versões fixas) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+    <!-- Google Tradutor (invisível) -->
+    <div id="google_translate_element" hidden></div>
+    <script>
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({ pageLanguage: 'pt', includedLanguages: 'en,es,fr,it,de,ja,zh-CN', autoDisplay: false }, 'google_translate_element');
+        }
+    </script>
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <!-- Interações do cabeçalho e modais -->
+    <script>
+        const profileBtn = document.getElementById('userProfileBtn');
+        const profileMenu = document.getElementById('profileMenu');
+
+        function setProfileMenu(open) {
+            profileMenu.classList.toggle('open', open);
+            profileBtn.setAttribute('aria-expanded', String(open));
+        }
+        profileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            setProfileMenu(!profileMenu.classList.contains('open'));
+        });
+        document.addEventListener('click', (e) => {
+            if (!profileMenu.contains(e.target) && !profileBtn.contains(e.target)) setProfileMenu(false);
+        });
+
+        function avatarUrl(name) {
+            return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'U')}&background=2563eb&color=fff&bold=true`;
+        }
+
+        function setAvatars(src) {
+            ['userAvatar', 'dropdownAvatar', 'sidebarAvatar'].forEach(id => { document.getElementById(id).src = src; });
+        }
+
+        (function initHeader() {
+            const name = localStorage.getItem('fcs_username') || 'Usuário';
+            ['userNameDisplay', 'dropdownName', 'sidebarUserName'].forEach(id => { document.getElementById(id).textContent = name; });
+            setAvatars(localStorage.getItem('fcs_avatar') || avatarUrl(name));
+        })();
+
+        document.getElementById('avatarUpload').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) return showToast('Selecione um arquivo de imagem.', 'error');
+            if (file.size > 2 * 1024 * 1024) return showToast('A imagem deve ter no máximo 2 MB.', 'error');
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    localStorage.setItem('fcs_avatar', event.target.result);
+                } catch (err) {
+                    return showToast('Não foi possível salvar a foto (armazenamento cheio).', 'error');
+                }
+                setAvatars(event.target.result);
+                setProfileMenu(false);
+                showToast('Foto atualizada.');
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function openProfileModal(id) {
+            setProfileMenu(false);
+            document.getElementById(id).classList.add('active');
+            if (id === 'settingsModal') {
+                document.getElementById('settingNameInput').value = localStorage.getItem('fcs_username') || '';
+                document.getElementById('settingRoleInput').value = localStorage.getItem('fcs_role') || '';
+                setTimeout(() => document.getElementById('settingNameInput').focus(), 50);
+            }
+        }
+
+        function closeProfileModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function closeProfileModalOnBg(e, id) {
+            if (e.target.id === id) closeProfileModal(id);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key !== 'Escape') return;
+            setProfileMenu(false);
+            document.querySelectorAll('.modal-overlay.active').forEach(m => {
+                if (m.dataset.dynamic) m.remove();
+                else m.classList.remove('active');
+            });
+        });
+
+        function changeLang(code) {
+            localStorage.setItem('fcs_lang_code', code);
+            const expired = 'expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            if (code === 'PT-BR') {
+                document.cookie = `googtrans=; ${expired}`;
+                document.cookie = `googtrans=; ${expired} domain=${location.hostname}`;
+            } else {
+                const gCode = code === 'ZH' ? '/pt/zh-CN' : '/pt/' + code.toLowerCase();
+                document.cookie = `googtrans=${gCode}; path=/;`;
+                document.cookie = `googtrans=${gCode}; path=/; domain=${location.hostname}`;
+            }
+            window.location.reload();
+        }
+
+        (function initLang() {
+            const code = localStorage.getItem('fcs_lang_code') || 'PT-BR';
+            document.getElementById('currentLangDropdown').textContent = code;
+            const btn = document.querySelector(`.lang-btn[data-lang="${code}"]`);
+            if (btn) {
+                btn.classList.add('active');
+                btn.insertAdjacentHTML('beforeend', '<i class="fa-solid fa-check"></i>');
+            }
+        })();
+    </script>
+
+    <!-- Scripts da aplicação (a ordem importa) -->
+    <script src="app.js"></script>
+    <script src="js/records.js"></script>
+    <script src="js/pages.js"></script>
+    <script src="js/fleet.js"></script>
+    <script src="js/trips.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/export.js"></script>
+</body>
+</html>

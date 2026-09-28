@@ -1,0 +1,53 @@
+<!-- historico.html -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Histórico</h1>
+        <p class="page-subtitle">Linha do tempo consolidada de abastecimentos e manutenções.</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="filters">
+            <div class="field">
+                <label for="historicoPeriod">Período</label>
+                <select id="historicoPeriod">
+                    <option value="30">Últimos 30 dias</option>
+                    <option value="90">Últimos 3 meses</option>
+                    <option value="180">Últimos 6 meses</option>
+                    <option value="365">Últimos 12 meses</option>
+                    <option value="" selected>Todo o período</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="historicoVehicle">Veículo</label>
+                <select id="historicoVehicle">
+                    <option value="">Todos os veículos</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="historicoType">Tipo</label>
+                <select id="historicoType">
+                    <option value="">Todos</option>
+                    <option value="fuel">Abastecimentos</option>
+                    <option value="maint">Manutenções</option>
+                </select>
+            </div>
+        </div>
+        <div class="row" id="historicoResumo"></div>
+    </div>
+    <div class="table-wrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Veículo</th>
+                    <th>Tipo</th>
+                    <th>Detalhes</th>
+                    <th class="num">Valor</th>
+                </tr>
+            </thead>
+            <tbody id="historicoGeralBody"></tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,92 @@
+<!-- financeiro.html -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Financeiro</h1>
+        <p class="page-subtitle">Despesas com combustível e manutenção, por categoria e por veículo.</p>
+    </div>
+    <div class="page-actions">
+        <div class="field" style="min-width: 180px;">
+            <select id="financeiroPeriod" aria-label="Período">
+                <option value="30">Últimos 30 dias</option>
+                <option value="90">Últimos 3 meses</option>
+                <option value="180">Últimos 6 meses</option>
+                <option value="365">Últimos 12 meses</option>
+                <option value="" selected>Todo o período</option>
+            </select>
+        </div>
+        <button class="btn btn-secondary" onclick="exportFinanceiroCSV()"><i class="fa-solid fa-file-csv"></i> CSV</button>
+    </div>
+</div>
+
+<div class="stack">
+    <div class="grid grid-4">
+        <div class="kpi">
+            <div class="kpi-top"><span class="kpi-label">Total no período</span><span class="kpi-icon"><i class="fa-solid fa-sack-dollar"></i></span></div>
+            <div class="kpi-value" id="finTotal">—</div>
+            <div class="kpi-meta" id="finCount"></div>
+        </div>
+        <div class="kpi tone-info">
+            <div class="kpi-top"><span class="kpi-label">Combustível</span><span class="kpi-icon"><i class="fa-solid fa-gas-pump"></i></span></div>
+            <div class="kpi-value" id="finFuel">—</div>
+            <div class="kpi-meta" id="finFuelShare"></div>
+        </div>
+        <div class="kpi tone-warning">
+            <div class="kpi-top"><span class="kpi-label">Manutenção</span><span class="kpi-icon"><i class="fa-solid fa-wrench"></i></span></div>
+            <div class="kpi-value" id="finMaint">—</div>
+            <div class="kpi-meta" id="finMaintShare"></div>
+        </div>
+        <div class="kpi tone-violet">
+            <div class="kpi-top"><span class="kpi-label">Média mensal</span><span class="kpi-icon"><i class="fa-solid fa-calendar"></i></span></div>
+            <div class="kpi-value" id="finMonthlyAvg">—</div>
+            <div class="kpi-meta">Últimos 6 meses</div>
+        </div>
+    </div>
+
+    <div class="grid grid-main">
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Evolução mensal</div>
+                    <div class="card-subtitle">Combustível × manutenção nos últimos 6 meses</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-box"><canvas id="finMonthlyChart" role="img" aria-label="Evolução mensal de custos"></canvas></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Custo por veículo</div>
+                    <div class="card-subtitle">No período selecionado</div>
+                </div>
+            </div>
+            <div class="list" id="finVehicleList"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Transações</div>
+            <div class="search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" id="tableSearch" placeholder="Buscar transação" aria-label="Buscar transações">
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Categoria</th>
+                        <th>Veículo</th>
+                        <th>Descrição</th>
+                        <th class="num">Valor</th>
+                    </tr>
+                </thead>
+                <tbody id="financeiroLogBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>

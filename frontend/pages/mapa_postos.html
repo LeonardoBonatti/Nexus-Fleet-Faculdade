@@ -1,0 +1,88 @@
+<!-- mapa_postos.html -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Mapa de postos</h1>
+        <p class="page-subtitle">Postos de referência da região e postos cadastrados por você. Clique em um marcador para ver preços e abrir a rota.</p>
+    </div>
+</div>
+
+<div class="stack">
+    <div class="grid grid-main">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Mapa</div>
+                <div class="map-legend">
+                    <span><i style="background: #2563eb;"></i> Referência</span>
+                    <span><i style="background: #16a34a;"></i> Meus postos</span>
+                </div>
+            </div>
+            <div id="fleetMap" class="map"></div>
+        </div>
+
+        <div class="card" style="align-self: start;">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Cadastrar posto</div>
+                    <div class="card-subtitle">Clique no mapa para definir a localização.</div>
+                </div>
+            </div>
+            <form id="stationForm" class="card-body" novalidate>
+                <div class="form-grid">
+                    <div class="field full">
+                        <label for="stationName">Nome / bandeira<span class="req">*</span></label>
+                        <input type="text" name="name" id="stationName" maxlength="120" placeholder="Ex.: Shell Centro" required>
+                    </div>
+                    <div class="field">
+                        <label for="stationGas">Gasolina</label>
+                        <div class="input-affix"><span class="affix prefix">R$</span><input type="number" step="0.01" min="0.01" max="100" name="price_gas" id="stationGas" placeholder="5,89"></div>
+                    </div>
+                    <div class="field">
+                        <label for="stationGasAd">Gasolina aditivada</label>
+                        <div class="input-affix"><span class="affix prefix">R$</span><input type="number" step="0.01" min="0.01" max="100" name="price_gas_ad" id="stationGasAd" placeholder="6,29"></div>
+                    </div>
+                    <div class="field">
+                        <label for="stationAlcool">Etanol</label>
+                        <div class="input-affix"><span class="affix prefix">R$</span><input type="number" step="0.01" min="0.01" max="100" name="price_alcool" id="stationAlcool" placeholder="4,20"></div>
+                    </div>
+                    <div class="field">
+                        <label for="stationDiesel">Diesel S10</label>
+                        <div class="input-affix"><span class="affix prefix">R$</span><input type="number" step="0.01" min="0.01" max="100" name="price_diesel" id="stationDiesel" placeholder="6,49"></div>
+                    </div>
+                    <div class="field">
+                        <label for="stationGnv">GNV (m³)</label>
+                        <div class="input-affix"><span class="affix prefix">R$</span><input type="number" step="0.01" min="0.01" max="100" name="price_gnv" id="stationGnv" placeholder="4,80"></div>
+                    </div>
+                    <div class="field">
+                        <label for="formCoords">Coordenadas<span class="req">*</span></label>
+                        <input type="text" id="formCoords" placeholder="Clique no mapa" readonly>
+                        <input type="hidden" name="lat" id="formLat">
+                        <input type="hidden" name="lng" id="formLng">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-block"><i class="fa-solid fa-location-dot"></i> Adicionar ao mapa</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Meus postos</div>
+        </div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Posto</th>
+                        <th class="num">Gasolina</th>
+                        <th class="num">Etanol</th>
+                        <th class="num">Diesel S10</th>
+                        <th class="actions"></th>
+                    </tr>
+                </thead>
+                <tbody id="myStationsBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>

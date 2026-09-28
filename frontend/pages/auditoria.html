@@ -1,0 +1,61 @@
+<!-- auditoria.html — RNF05 -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Auditoria</h1>
+        <p class="page-subtitle">Histórico de todas as alterações nos cadastros, com usuário, data e valores antes/depois. <span id="audRetention"></span></p>
+    </div>
+</div>
+
+<div class="card">
+    <form class="card-header" id="audFilterForm" style="align-items: flex-end;">
+        <div class="filters">
+            <div class="field">
+                <label for="audEntity">Cadastro</label>
+                <select id="audEntity"></select>
+            </div>
+            <div class="field">
+                <label for="audAction">Ação</label>
+                <select id="audAction"></select>
+            </div>
+            <div class="field">
+                <label for="audUser">Usuário</label>
+                <select id="audUser"></select>
+            </div>
+            <div class="field">
+                <label for="audStart">De</label>
+                <input type="date" id="audStart">
+            </div>
+            <div class="field">
+                <label for="audEnd">Até</label>
+                <input type="date" id="audEnd">
+            </div>
+            <div class="field">
+                <label for="audSearch">Texto</label>
+                <input type="search" id="audSearch" placeholder="Resumo ou usuário">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-filter"></i> Filtrar</button>
+    </form>
+    <div class="table-wrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Data e hora</th>
+                    <th>Usuário</th>
+                    <th>Ação</th>
+                    <th>Cadastro</th>
+                    <th>Resumo</th>
+                    <th class="actions"></th>
+                </tr>
+            </thead>
+            <tbody id="audBody"></tbody>
+        </table>
+    </div>
+    <div class="card-footer row-between">
+        <span id="audInfo"></span>
+        <div class="row">
+            <button class="btn btn-secondary btn-sm" id="audPrev"><i class="fa-solid fa-chevron-left"></i> Anteriores</button>
+            <button class="btn btn-secondary btn-sm" id="audNext">Próximos <i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+    </div>
+</div>

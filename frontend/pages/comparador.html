@@ -1,0 +1,52 @@
+<!-- comparador.html -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Eficiência</h1>
+        <p class="page-subtitle">Ranking de consumo real (km/L) e custo por quilômetro de cada veículo.</p>
+    </div>
+</div>
+
+<div class="stack">
+    <div class="grid grid-3">
+        <div class="kpi tone-success">
+            <div class="kpi-top"><span class="kpi-label">Mais eficiente</span><span class="kpi-icon"><i class="fa-solid fa-trophy"></i></span></div>
+            <div class="kpi-value" id="cmpBest">—</div>
+            <div class="kpi-meta" id="cmpBestInfo"></div>
+        </div>
+        <div class="kpi">
+            <div class="kpi-top"><span class="kpi-label">Média da frota</span><span class="kpi-icon"><i class="fa-solid fa-gauge-high"></i></span></div>
+            <div class="kpi-value" id="cmpFleet">—</div>
+            <div class="kpi-meta" id="cmpFleetInfo"></div>
+        </div>
+        <div class="kpi tone-danger">
+            <div class="kpi-top"><span class="kpi-label">Maior consumo</span><span class="kpi-icon"><i class="fa-solid fa-fire-flame-curved"></i></span></div>
+            <div class="kpi-value" id="cmpWorst">—</div>
+            <div class="kpi-meta" id="cmpWorstInfo"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Ranking de eficiência</div>
+        </div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="width: 56px;">#</th>
+                        <th>Veículo</th>
+                        <th>Consumo médio</th>
+                        <th class="num">Custo por km</th>
+                        <th class="num">Distância medida</th>
+                        <th>Avaliação</th>
+                    </tr>
+                </thead>
+                <tbody id="eficienciaLogBody"></tbody>
+            </table>
+        </div>
+        <div class="card-footer">
+            <i class="fa-solid fa-circle-info"></i>
+            Consumo = (último hodômetro − primeiro hodômetro) ÷ litros abastecidos após o primeiro registro. São necessários pelo menos 2 abastecimentos com hodômetro.
+        </div>
+    </div>
+</div>

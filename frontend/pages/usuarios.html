@@ -1,0 +1,87 @@
+<!-- usuarios.html — RF14 -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Usuários e perfis de acesso</h1>
+        <p class="page-subtitle">Cada perfil vê apenas as telas e ações permitidas. As permissões também são verificadas no servidor.</p>
+    </div>
+    <div class="page-actions">
+        <button class="btn btn-primary" onclick="openUserModal()"><i class="fa-solid fa-user-plus"></i> Novo usuário</button>
+    </div>
+</div>
+
+<div class="stack">
+    <div class="grid grid-4">
+        <div class="kpi tone-violet">
+            <div class="kpi-top"><span class="kpi-label">Administradores</span><span class="kpi-icon"><i class="fa-solid fa-user-shield"></i></span></div>
+            <div class="kpi-value" id="usr_admin">—</div>
+        </div>
+        <div class="kpi">
+            <div class="kpi-top"><span class="kpi-label">Gestores de frota</span><span class="kpi-icon"><i class="fa-solid fa-user-tie"></i></span></div>
+            <div class="kpi-value" id="usr_gestor">—</div>
+        </div>
+        <div class="kpi tone-info">
+            <div class="kpi-top"><span class="kpi-label">Motoristas</span><span class="kpi-icon"><i class="fa-solid fa-id-card"></i></span></div>
+            <div class="kpi-value" id="usr_motorista">—</div>
+        </div>
+        <div class="kpi tone-success">
+            <div class="kpi-top"><span class="kpi-label">Financeiro / diretoria</span><span class="kpi-icon"><i class="fa-solid fa-chart-pie"></i></span></div>
+            <div class="kpi-value" id="usr_financeiro">—</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Usuários</div>
+            <div class="search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" id="tableSearch" placeholder="Buscar por nome, e-mail ou perfil" aria-label="Buscar usuários">
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Usuário</th>
+                        <th>Perfil</th>
+                        <th>Cargo</th>
+                        <th>Motorista vinculado</th>
+                        <th>Último acesso</th>
+                        <th>Situação</th>
+                        <th class="actions"></th>
+                    </tr>
+                </thead>
+                <tbody id="userLogBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title"><i class="fa-solid fa-table-cells"></i> Matriz de permissões</div>
+        </div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Funcionalidade</th>
+                        <th>Administrador</th>
+                        <th>Gestor de frota</th>
+                        <th>Motorista</th>
+                        <th>Financeiro / diretoria</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="cell-strong">Usuários, perfis, auditoria e status</td><td><i class="fa-solid fa-check text-success"></i> Total</td><td><i class="fa-solid fa-xmark text-danger"></i></td><td><i class="fa-solid fa-xmark text-danger"></i></td><td><i class="fa-solid fa-xmark text-danger"></i></td></tr>
+                    <tr><td class="cell-strong">Veículos, motoristas, documentos</td><td><i class="fa-solid fa-check text-success"></i> Total</td><td><i class="fa-solid fa-check text-success"></i> Total</td><td><i class="fa-solid fa-xmark text-danger"></i></td><td><i class="fa-regular fa-eye text-primary"></i> Consulta</td></tr>
+                    <tr><td class="cell-strong">Viagens</td><td><i class="fa-solid fa-check text-success"></i> Total</td><td><i class="fa-solid fa-check text-success"></i> Total</td><td><i class="fa-solid fa-user text-primary"></i> Próprias (checklist, iniciar, finalizar)</td><td><i class="fa-regular fa-eye text-primary"></i> Consulta</td></tr>
+                    <tr><td class="cell-strong">Abastecimentos</td><td><i class="fa-solid fa-check text-success"></i> Total</td><td><i class="fa-solid fa-check text-success"></i> Total</td><td><i class="fa-solid fa-user text-primary"></i> Registrar e ver os próprios</td><td><i class="fa-regular fa-eye text-primary"></i> Consulta</td></tr>
+                    <tr><td class="cell-strong">Manutenções</td><td><i class="fa-solid fa-check text-success"></i> Total</td><td><i class="fa-solid fa-check text-success"></i> Agendar e aprovar</td><td><i class="fa-solid fa-xmark text-danger"></i></td><td><i class="fa-regular fa-eye text-primary"></i> Consulta</td></tr>
+                    <tr><td class="cell-strong">Multas</td><td><i class="fa-solid fa-check text-success"></i> Total</td><td><i class="fa-solid fa-check text-success"></i> Total</td><td><i class="fa-solid fa-user text-primary"></i> Ver as próprias</td><td><i class="fa-regular fa-eye text-primary"></i> Consulta</td></tr>
+                    <tr><td class="cell-strong">Ocorrências</td><td><i class="fa-solid fa-check text-success"></i> Total</td><td><i class="fa-solid fa-check text-success"></i> Tratar</td><td><i class="fa-solid fa-user text-primary"></i> Reportar</td><td><i class="fa-solid fa-xmark text-danger"></i></td></tr>
+                    <tr><td class="cell-strong">Rastreamento em tempo real</td><td><i class="fa-solid fa-check text-success"></i></td><td><i class="fa-solid fa-check text-success"></i></td><td><i class="fa-solid fa-location-crosshairs text-primary"></i> Envia a localização</td><td><i class="fa-solid fa-xmark text-danger"></i></td></tr>
+                    <tr><td class="cell-strong">Relatórios, dashboard e análises</td><td><i class="fa-solid fa-check text-success"></i></td><td><i class="fa-solid fa-check text-success"></i></td><td><i class="fa-solid fa-xmark text-danger"></i></td><td><i class="fa-regular fa-eye text-primary"></i> Consulta e exportação</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

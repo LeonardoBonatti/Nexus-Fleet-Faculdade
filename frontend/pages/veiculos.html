@@ -1,0 +1,58 @@
+<!-- veiculos.html — RF01 / UC01 -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Veículos</h1>
+        <p class="page-subtitle">Cadastro da frota com placa, modelo, ano, tipo e capacidade de carga.</p>
+    </div>
+    <div class="page-actions">
+        <button class="btn btn-primary" data-roles="admin,gestor" onclick="openVehicleModal()"><i class="fa-solid fa-plus"></i> Novo veículo</button>
+    </div>
+</div>
+
+<div class="stack">
+    <div class="grid grid-4">
+        <div class="kpi">
+            <div class="kpi-top"><span class="kpi-label">Total de veículos</span><span class="kpi-icon"><i class="fa-solid fa-car-side"></i></span></div>
+            <div class="kpi-value" id="vehTotal">—</div>
+            <div class="kpi-meta" id="vehInactive"></div>
+        </div>
+        <div class="kpi tone-success">
+            <div class="kpi-top"><span class="kpi-label">Disponíveis</span><span class="kpi-icon"><i class="fa-solid fa-circle-check"></i></span></div>
+            <div class="kpi-value" id="vehActive">—</div>
+        </div>
+        <div class="kpi tone-info">
+            <div class="kpi-top"><span class="kpi-label">Em viagem</span><span class="kpi-icon"><i class="fa-solid fa-diamond-turn-right"></i></span></div>
+            <div class="kpi-value" id="vehInTrip">—</div>
+        </div>
+        <div class="kpi tone-warning">
+            <div class="kpi-top"><span class="kpi-label">Em manutenção</span><span class="kpi-icon"><i class="fa-solid fa-screwdriver-wrench"></i></span></div>
+            <div class="kpi-value" id="vehMaintenance">—</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Frota cadastrada</div>
+            <div class="search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" id="tableSearch" placeholder="Buscar por placa, modelo, tipo ou status" aria-label="Buscar veículos">
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Veículo</th>
+                        <th>Placa</th>
+                        <th class="num">Carga</th>
+                        <th class="num">Quilometragem</th>
+                        <th>Combustível</th>
+                        <th>Status</th>
+                        <th class="actions"></th>
+                    </tr>
+                </thead>
+                <tbody id="vehicleLogBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>

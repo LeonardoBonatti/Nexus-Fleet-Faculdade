@@ -1,0 +1,30 @@
+# Dependências (a Vercel instala sozinha a partir do package.json)
+node_modules/
+
+# O lock antigo apontava para sqlite3/bcrypt nativos, que não são mais usados.
+# Sem ele a Vercel resolve as versões corretas na instalação.
+package-lock.json
+
+# Segredos — NUNCA subir
+.env
+.env.local
+.env.*.local
+
+# Banco SQLite local (não vai para o GitHub nem para a Vercel)
+*.sqlite
+*.sqlite3
+*.db
+
+# Clone antigo do repositório (pasta auxiliar, não faz parte do código)
+Nexus Fleet Faculdade/
+
+# Logs e lixo de sistema
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/
+.idea/

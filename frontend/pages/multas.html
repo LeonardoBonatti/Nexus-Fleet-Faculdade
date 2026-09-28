@@ -1,0 +1,60 @@
+<!-- multas.html — RF09 -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Multas</h1>
+        <p class="page-subtitle">Registro e controle de multas vinculadas ao veículo e ao motorista responsável na data da infração.</p>
+    </div>
+    <div class="page-actions">
+        <button class="btn btn-primary" data-roles="admin,gestor" onclick="openFineModal()"><i class="fa-solid fa-plus"></i> Registrar multa</button>
+    </div>
+</div>
+
+<div class="stack">
+    <div class="grid grid-4">
+        <div class="kpi tone-warning">
+            <div class="kpi-top"><span class="kpi-label">Valor pendente</span><span class="kpi-icon"><i class="fa-solid fa-hourglass-half"></i></span></div>
+            <div class="kpi-value" id="fineOpenAmount">—</div>
+            <div class="kpi-meta" id="fineOpenCount"></div>
+        </div>
+        <div class="kpi tone-danger">
+            <div class="kpi-top"><span class="kpi-label">Total no ano</span><span class="kpi-icon"><i class="fa-solid fa-receipt"></i></span></div>
+            <div class="kpi-value" id="fineYearAmount">—</div>
+        </div>
+        <div class="kpi tone-violet">
+            <div class="kpi-top"><span class="kpi-label">Pontos no ano</span><span class="kpi-icon"><i class="fa-solid fa-star-half-stroke"></i></span></div>
+            <div class="kpi-value" id="finePoints">—</div>
+        </div>
+        <div class="kpi tone-info">
+            <div class="kpi-top"><span class="kpi-label">Vinculadas pela viagem</span><span class="kpi-icon"><i class="fa-solid fa-link"></i></span></div>
+            <div class="kpi-value" id="fineAutoLinked">—</div>
+            <div class="kpi-meta">Motorista identificado automaticamente</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Multas registradas</div>
+            <div class="search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" id="tableSearch" placeholder="Buscar por placa, motorista ou infração" aria-label="Buscar multas">
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Veículo</th>
+                        <th>Motorista</th>
+                        <th>Infração</th>
+                        <th>Gravidade</th>
+                        <th class="num">Valor</th>
+                        <th>Situação</th>
+                        <th class="actions"></th>
+                    </tr>
+                </thead>
+                <tbody id="fineLogBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,63 @@
+<!-- motoristas.html — RF02 / RNF03 -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Motoristas</h1>
+        <p class="page-subtitle">Cadastro com CNH, categoria, validade e vínculo com veículos. Motoristas com CNH vencida não podem ser escalados.</p>
+    </div>
+    <div class="page-actions">
+        <button class="btn btn-primary" data-roles="admin,gestor" onclick="openDriverModal()"><i class="fa-solid fa-plus"></i> Novo motorista</button>
+    </div>
+</div>
+
+<div class="stack">
+    <div class="grid grid-4">
+        <div class="kpi">
+            <div class="kpi-top"><span class="kpi-label">Motoristas</span><span class="kpi-icon"><i class="fa-solid fa-id-card"></i></span></div>
+            <div class="kpi-value" id="drvTotal">—</div>
+            <div class="kpi-meta" id="drvActive"></div>
+        </div>
+        <div class="kpi tone-success">
+            <div class="kpi-top"><span class="kpi-label">CNH válida</span><span class="kpi-icon"><i class="fa-solid fa-circle-check"></i></span></div>
+            <div class="kpi-value" id="drvValid">—</div>
+        </div>
+        <div class="kpi tone-warning">
+            <div class="kpi-top"><span class="kpi-label">Vence em 30 dias</span><span class="kpi-icon"><i class="fa-regular fa-clock"></i></span></div>
+            <div class="kpi-value" id="drvExpiring">—</div>
+        </div>
+        <div class="kpi tone-danger">
+            <div class="kpi-top"><span class="kpi-label">CNH vencida</span><span class="kpi-icon"><i class="fa-solid fa-ban"></i></span></div>
+            <div class="kpi-value" id="drvExpired">—</div>
+            <div class="kpi-meta">Bloqueados para viagens</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Motoristas cadastrados</div>
+            <div class="search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" id="tableSearch" placeholder="Buscar por nome, categoria ou placa" aria-label="Buscar motoristas">
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Motorista</th>
+                        <th>CPF</th>
+                        <th>CNH</th>
+                        <th>Validade</th>
+                        <th>Veículos</th>
+                        <th>Acesso ao sistema</th>
+                        <th>Situação</th>
+                        <th class="actions"></th>
+                    </tr>
+                </thead>
+                <tbody id="driverLogBody"></tbody>
+            </table>
+        </div>
+        <div class="card-footer">
+            <i class="fa-solid fa-lock"></i> CPF e número da CNH são armazenados criptografados (AES-256-GCM) e exibidos mascarados nas listagens.
+        </div>
+    </div>
+</div>

@@ -1,0 +1,174 @@
+<!-- manutencao.html — RF04 / RF05 / HU03 -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Manutenções</h1>
+        <p class="page-subtitle">Agendamento e controle de manutenções preventivas e corretivas. Alertas automáticos 3 dias antes da data agendada.</p>
+    </div>
+    <div class="page-actions" data-roles="admin,gestor">
+        <button class="btn btn-secondary" onclick="openMaintModal('scheduled')"><i class="fa-regular fa-calendar-plus"></i> Agendar</button>
+        <button class="btn btn-primary" onclick="openMaintModal('completed')"><i class="fa-solid fa-plus"></i> Registrar realizada</button>
+    </div>
+</div>
+
+<div class="stack">
+    <div class="grid grid-4">
+        <div class="kpi">
+            <div class="kpi-top"><span class="kpi-label">Gasto no mês</span><span class="kpi-icon"><i class="fa-solid fa-wallet"></i></span></div>
+            <div class="kpi-value" id="maintMonthCost">—</div>
+            <div class="kpi-meta" id="maintMonthCount"></div>
+        </div>
+        <div class="kpi tone-info">
+            <div class="kpi-top"><span class="kpi-label">Agendadas</span><span class="kpi-icon"><i class="fa-regular fa-calendar"></i></span></div>
+            <div class="kpi-value" id="maintScheduled">—</div>
+            <div class="kpi-meta" id="maintScheduledInfo"></div>
+        </div>
+        <div class="kpi tone-violet">
+            <div class="kpi-top"><span class="kpi-label">Preventivas × corretivas</span><span class="kpi-icon"><i class="fa-solid fa-scale-balanced"></i></span></div>
+            <div class="kpi-value" id="maintRatio">—</div>
+            <div class="kpi-meta">Serviços concluídos</div>
+        </div>
+        <button class="kpi tone-danger" onclick="navigateTo('diagnostico')">
+            <div class="kpi-top"><span class="kpi-label">Alertas por km/tempo</span><span class="kpi-icon"><i class="fa-solid fa-triangle-exclamation"></i></span></div>
+            <div class="kpi-value" id="maintAlerts">—</div>
+            <div class="kpi-meta">Ver diagnóstico <i class="fa-solid fa-arrow-right"></i></div>
+        </button>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Manutenções</div>
+            <div class="search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" id="tableSearch" placeholder="Buscar por veículo, serviço, situação ou data" aria-label="Buscar manutenções">
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Veículo</th>
+                        <th>Serviço</th>
+                        <th>Situação</th>
+                        <th class="num">Quilometragem</th>
+                        <th class="num">Custo</th>
+                        <th class="actions"></th>
+                    </tr>
+                </thead>
+                <tbody id="maintenanceLogBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: manutenção -->
+<div id="maintModal" class="modal-overlay">
+    <div class="modal modal-lg" role="dialog" aria-modal="true" aria-labelledby="maintModalTitle">
+        <form id="maintenanceForm" novalidate>
+            <input type="hidden" name="status" value="completed">
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title" id="maintModalTitle">Registrar manutenção</h3>
+                    <p class="modal-subtitle">Informe a quilometragem para melhorar a precisão dos alertas preventivos.</p>
+                </div>
+                <button type="button" class="btn-icon" onclick="closeModal('maintModal')" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="segmented" id="maintModeSwitch" style="margin-bottom: 18px;">
+                    <button type="button" data-mode="completed" class="active" onclick="setMaintMode('completed')"><i class="fa-solid fa-check"></i> Serviço realizado</button>
+                    <button type="button" data-mode="scheduled" onclick="setMaintMode('scheduled')"><i class="fa-regular fa-calendar"></i> Agendar</button>
+                </div>
+
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="maintVehicleSelect">Veículo<span class="req">*</span></label>
+                        <select name="vehicle_id" id="maintVehicleSelect" required onchange="onVehicleChangeMaint(this)">
+                            <option value="">Carregando...</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="maintKind">Tipo<span class="req">*</span></label>
+                        <select name="kind" id="maintKind" required>
+                            <option value="preventiva">Preventiva</option>
+                            <option value="corretiva">Corretiva</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="maintServiceType">Serviço<span class="req">*</span></label>
+                        <select name="service_type" id="maintServiceType" required onchange="onServiceTypeChange(this)">
+                            <option value="">Selecione...</option>
+                            <optgroup label="Preventiva">
+                                <option value="Troca de Óleo e Filtro">Troca de óleo e filtro</option>
+                                <option value="Revisão Geral">Revisão geral</option>
+                                <option value="Alinhamento e Balanceamento">Alinhamento e balanceamento</option>
+                                <option value="Correia Dentada">Correia dentada</option>
+                            </optgroup>
+                            <optgroup label="Componentes">
+                                <option value="Troca de Pneus">Troca de pneus</option>
+                                <option value="Freios (Pastilhas/Discos)">Freios (pastilhas/discos)</option>
+                                <option value="Troca de Bateria">Troca de bateria</option>
+                                <option value="Suspensão">Suspensão</option>
+                                <option value="Embreagem">Embreagem</option>
+                            </optgroup>
+                            <optgroup label="Sistemas">
+                                <option value="Sistema Elétrico">Sistema elétrico</option>
+                                <option value="Injeção Eletrônica">Injeção eletrônica</option>
+                                <option value="Ar Condicionado">Ar-condicionado</option>
+                                <option value="Funilaria e Pintura">Funilaria e pintura</option>
+                            </optgroup>
+                            <option value="Outro">Outro (descrever)</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="maintWorkshop">Oficina <span class="opt">(opcional)</span></label>
+                        <input type="text" name="workshop" id="maintWorkshop" maxlength="120" placeholder="Ex.: Auto Center Americana">
+                    </div>
+
+                    <div class="field full">
+                        <label for="maintDetail">Descrição <span class="opt">(obrigatória para "Outro")</span></label>
+                        <input type="text" name="service_detail" id="maintDetail" maxlength="255" placeholder="Ex.: troca das pastilhas dianteiras e traseiras">
+                    </div>
+
+                    <div class="field" id="maintDoneFields">
+                        <label for="maintDateInput">Data do serviço<span class="req">*</span></label>
+                        <input type="date" name="date" id="maintDateInput" required>
+                    </div>
+                    <div class="field" id="maintScheduleFields" hidden>
+                        <label for="maintScheduleInput">Data agendada<span class="req">*</span></label>
+                        <input type="date" name="scheduled_date" id="maintScheduleInput">
+                    </div>
+                    <div class="field">
+                        <label for="maintCostInput" id="maintCostLabel">Custo total<span class="req">*</span></label>
+                        <div class="input-affix">
+                            <span class="affix prefix">R$</span>
+                            <input type="text" inputmode="numeric" name="cost" id="maintCostInput" placeholder="350,00" required oninput="maskCurrency(this)">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="maintOdometerInput">Quilometragem <span class="opt">(recomendado)</span></label>
+                        <div class="input-affix">
+                            <input type="number" step="1" name="odometer" id="maintOdometerInput" placeholder="15400" min="0" oninput="validateMaintOdometer()">
+                            <span class="affix">km</span>
+                        </div>
+                        <span class="field-hint" id="maintOdometerHint"></span>
+                    </div>
+                    <div class="field">
+                        <label for="maintHorimeterInput">Horímetro <span class="opt">(opcional)</span></label>
+                        <div class="input-affix">
+                            <input type="number" step="0.1" name="horimeter" id="maintHorimeterInput" placeholder="2350,5" min="0" oninput="validateMaintHorimeter()">
+                            <span class="affix">h</span>
+                        </div>
+                        <span class="field-hint" id="maintHorimeterHint"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span class="modal-footer-note"><span class="req">*</span> Campos obrigatórios</span>
+                <button type="button" class="btn btn-ghost" onclick="closeModal('maintModal')">Cancelar</button>
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i> Salvar</button>
+            </div>
+        </form>
+    </div>
+</div>

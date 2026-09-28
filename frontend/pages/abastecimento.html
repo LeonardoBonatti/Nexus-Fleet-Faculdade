@@ -1,0 +1,151 @@
+<!-- abastecimento.html — RF03 / RF06 / HU02 -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Abastecimentos</h1>
+        <p class="page-subtitle">Registro de litros, valor, tipo de combustível e quilometragem. O consumo médio (km/L) é calculado automaticamente.</p>
+    </div>
+    <div class="page-actions">
+        <button class="btn btn-primary" data-roles="admin,gestor,motorista" onclick="openFuelModal()"><i class="fa-solid fa-plus"></i> Novo abastecimento</button>
+    </div>
+</div>
+
+<div class="stack">
+    <div class="grid grid-4">
+        <div class="kpi">
+            <div class="kpi-top"><span class="kpi-label">Gasto no mês</span><span class="kpi-icon"><i class="fa-solid fa-wallet"></i></span></div>
+            <div class="kpi-value" id="fuelMonthCost">—</div>
+            <div class="kpi-meta" id="fuelMonthCount"></div>
+        </div>
+        <div class="kpi tone-info">
+            <div class="kpi-top"><span class="kpi-label">Litros no mês</span><span class="kpi-icon"><i class="fa-solid fa-droplet"></i></span></div>
+            <div class="kpi-value" id="fuelMonthLiters">—</div>
+        </div>
+        <div class="kpi tone-warning">
+            <div class="kpi-top"><span class="kpi-label">Preço médio por litro</span><span class="kpi-icon"><i class="fa-solid fa-tag"></i></span></div>
+            <div class="kpi-value" id="fuelAvgPrice">—</div>
+            <div class="kpi-meta">Últimos 90 dias</div>
+        </div>
+        <div class="kpi tone-success">
+            <div class="kpi-top"><span class="kpi-label">Consumo médio</span><span class="kpi-icon"><i class="fa-solid fa-gauge-high"></i></span></div>
+            <div class="kpi-value" id="fuelFleetEff">—</div>
+            <div class="kpi-meta">Calculado pela quilometragem</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Histórico de abastecimentos</div>
+            <div class="search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" id="tableSearch" placeholder="Buscar por veículo, motorista, data ou combustível" aria-label="Buscar abastecimentos">
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Veículo</th>
+                        <th>Motorista</th>
+                        <th>Combustível</th>
+                        <th class="num">Litros</th>
+                        <th class="num">Quilometragem</th>
+                        <th class="num">Consumo</th>
+                        <th class="num">Total</th>
+                        <th class="actions"></th>
+                    </tr>
+                </thead>
+                <tbody id="fuelLogBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: novo abastecimento -->
+<div id="fuelModal" class="modal-overlay">
+    <div class="modal modal-lg" role="dialog" aria-modal="true" aria-labelledby="fuelModalTitle">
+        <form id="fuelRecordForm" novalidate>
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title" id="fuelModalTitle">Novo abastecimento</h3>
+                    <p class="modal-subtitle">Valida combustível compatível, capacidade do tanque e quilometragem crescente.</p>
+                </div>
+                <button type="button" class="btn-icon" onclick="closeModal('fuelModal')" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="fuelVehicleSelect">Veículo<span class="req">*</span></label>
+                        <select name="vehicle_id" id="fuelVehicleSelect" required onchange="onVehicleChangeFuel(this)">
+                            <option value="">Carregando...</option>
+                        </select>
+                        <span class="field-hint" id="fuelTankHint"></span>
+                    </div>
+                    <div class="field" data-roles="admin,gestor">
+                        <label for="fuelDriverSelect">Motorista</label>
+                        <select name="driver_id" id="fuelDriverSelect">
+                            <option value="">Automático (motorista da viagem em andamento)</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="fuelDateInput">Data<span class="req">*</span></label>
+                        <input type="date" name="date" id="fuelDateInput" required>
+                    </div>
+                    <div class="field">
+                        <label for="fuelTypeSelect">Combustível<span class="req">*</span></label>
+                        <select name="fuel_type" id="fuelTypeSelect" required>
+                            <option value="">Selecione o veículo</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="fuelLitersInput">Litros<span class="req">*</span></label>
+                        <div class="input-affix">
+                            <input type="number" step="0.01" name="liters" id="fuelLitersInput" placeholder="40,50" min="0.01" required oninput="validateFuelLiters()">
+                            <span class="affix">L</span>
+                        </div>
+                        <span class="field-hint" id="litersHint"></span>
+                    </div>
+                    <div class="field">
+                        <label for="pricePerLiter">Preço por litro<span class="req">*</span></label>
+                        <div class="input-affix">
+                            <span class="affix prefix">R$</span>
+                            <input type="text" inputmode="numeric" name="price_per_liter" id="pricePerLiter" placeholder="5,89" required oninput="maskCurrency(this); calcFuelTotal()">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="odometerInput">Quilometragem atual<span class="req">*</span></label>
+                        <div class="input-affix">
+                            <input type="number" step="1" name="odometer" id="odometerInput" placeholder="15400" min="1" required oninput="validateOdometer()">
+                            <span class="affix">km</span>
+                        </div>
+                        <span class="field-hint" id="odometerHint"></span>
+                    </div>
+                    <div class="field">
+                        <label for="fuelCostTotal">Valor total <span class="opt">(calculado)</span></label>
+                        <div class="input-affix">
+                            <span class="affix prefix">R$</span>
+                            <input type="text" name="cost" id="fuelCostTotal" placeholder="0,00" readonly tabindex="-1">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="horimeterInput">Horímetro <span class="opt">(opcional)</span></label>
+                        <div class="input-affix">
+                            <input type="number" step="0.1" name="horimeter" id="horimeterInput" placeholder="2350,5" min="0" oninput="validateHorimeter()">
+                            <span class="affix">h</span>
+                        </div>
+                        <span class="field-hint" id="horimeterHint"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span class="modal-footer-note"><span class="req">*</span> Campos obrigatórios</span>
+                <button type="button" class="btn btn-ghost" onclick="closeModal('fuelModal')">Cancelar</button>
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i> Registrar</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,171 @@
+<!-- viagens.html — RF03 / RF10 / RF11 / RF12 -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Viagens</h1>
+        <p class="page-subtitle">Rotas com origem, destino e paradas, associação de motorista e veículo, checklist de inspeção e quilometragem.</p>
+    </div>
+    <div class="page-actions">
+        <button class="btn btn-secondary" data-roles="motorista" onclick="openOccurrenceModal()"><i class="fa-solid fa-circle-exclamation"></i> Reportar ocorrência</button>
+        <button class="btn btn-secondary" data-roles="motorista" onclick="navigateTo('abastecimento')"><i class="fa-solid fa-gas-pump"></i> Abastecimentos</button>
+        <button class="btn btn-primary" data-roles="admin,gestor" onclick="openTripModal()"><i class="fa-solid fa-plus"></i> Nova viagem</button>
+    </div>
+</div>
+
+<div class="stack">
+    <!-- Localização do motorista durante a viagem (RF07) -->
+    <div class="card" id="gpsCard" hidden>
+        <div class="card-body row-between" style="flex-wrap: wrap;">
+            <div class="row">
+                <span class="live-dot" id="gpsDot"></span>
+                <div>
+                    <div class="cell-strong" id="gpsStatus">Localização não compartilhada</div>
+                    <div class="cell-sub" id="gpsTripLabel"></div>
+                    <div class="cell-sub" id="gpsLastSent"></div>
+                </div>
+            </div>
+            <div class="row" style="flex-wrap: wrap;">
+                <button class="btn btn-primary btn-sm" id="gpsStartBtn" onclick="startLocationSharing()"><i class="fa-solid fa-location-crosshairs"></i> Compartilhar localização</button>
+                <button class="btn btn-ghost btn-sm" id="gpsDemoBtn" onclick="window._activeTrip && startSimulation(window._activeTrip)"><i class="fa-solid fa-route"></i> Modo demonstração</button>
+                <button class="btn btn-danger-soft btn-sm" id="gpsStopBtn" onclick="stopLocationSharing()" hidden><i class="fa-solid fa-stop"></i> Parar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-4">
+        <div class="kpi tone-info">
+            <div class="kpi-top"><span class="kpi-label">Planejadas</span><span class="kpi-icon"><i class="fa-regular fa-calendar"></i></span></div>
+            <div class="kpi-value" id="tripPlanned">—</div>
+        </div>
+        <div class="kpi">
+            <div class="kpi-top"><span class="kpi-label">Em andamento</span><span class="kpi-icon"><i class="fa-solid fa-diamond-turn-right"></i></span></div>
+            <div class="kpi-value" id="tripActive">—</div>
+        </div>
+        <div class="kpi tone-success">
+            <div class="kpi-top"><span class="kpi-label">Concluídas no mês</span><span class="kpi-icon"><i class="fa-solid fa-flag-checkered"></i></span></div>
+            <div class="kpi-value" id="tripDoneMonth">—</div>
+        </div>
+        <div class="kpi tone-violet">
+            <div class="kpi-top"><span class="kpi-label">Quilômetros no mês</span><span class="kpi-icon"><i class="fa-solid fa-road"></i></span></div>
+            <div class="kpi-value" id="tripKmMonth">—</div>
+            <div class="kpi-meta">Diferença de quilometragem final × inicial</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="segmented" id="tripTabs" role="tablist" style="flex-wrap: wrap;">
+                <button data-filter="all" class="active">Todas</button>
+                <button data-filter="active">Ativas</button>
+                <button data-filter="planned">Planejadas</button>
+                <button data-filter="in_progress">Em andamento</button>
+                <button data-filter="completed">Concluídas</button>
+                <button data-filter="cancelled">Canceladas</button>
+            </div>
+            <div class="search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" id="tableSearch" placeholder="Buscar por rota, placa ou motorista" aria-label="Buscar viagens">
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Rota</th>
+                        <th>Veículo</th>
+                        <th>Motorista</th>
+                        <th>Período</th>
+                        <th>Situação</th>
+                        <th class="actions"></th>
+                    </tr>
+                </thead>
+                <tbody id="tripLogBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: nova viagem / edição -->
+<div id="tripModal" class="modal-overlay">
+    <div class="modal modal-xl" role="dialog" aria-modal="true" aria-labelledby="tripModalTitle">
+        <form id="tripForm" novalidate>
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title" id="tripModalTitle">Nova viagem</h3>
+                    <p class="modal-subtitle">O sistema bloqueia CNH vencida, categoria incompatível e conflito de agenda do veículo ou motorista.</p>
+                </div>
+                <button type="button" class="btn-icon" onclick="closeModal('tripModal')" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="grid grid-2">
+                    <div class="form-grid" style="align-content: start;">
+                        <div class="form-section-title">Veículo e motorista</div>
+                        <div class="field">
+                            <label for="tripVehicle">Veículo<span class="req">*</span></label>
+                            <select name="vehicle_id" id="tripVehicle" required></select>
+                        </div>
+                        <div class="field">
+                            <label for="tripDriver">Motorista<span class="req">*</span></label>
+                            <select name="driver_id" id="tripDriver" required></select>
+                        </div>
+                        <span class="field-hint full" id="tripDriverHint" style="grid-column: 1 / -1;"></span>
+
+                        <div class="field">
+                            <label for="tripStart">Saída prevista<span class="req">*</span></label>
+                            <input type="datetime-local" name="planned_start" id="tripStart" required>
+                        </div>
+                        <div class="field">
+                            <label for="tripEnd">Chegada prevista<span class="req">*</span></label>
+                            <input type="datetime-local" name="planned_end" id="tripEnd" required>
+                        </div>
+
+                        <div class="form-section-title divided">Rota</div>
+                        <div class="field full">
+                            <div class="route-points">
+                                <div class="route-point">
+                                    <span class="route-dot"><i class="fa-solid fa-circle-dot text-success"></i></span>
+                                    <div class="field">
+                                        <div class="autocomplete">
+                                            <input type="text" id="tripOrigin" class="input" placeholder="Origem (digite e selecione)" autocomplete="off" aria-label="Origem" required>
+                                            <ul id="tripOriginSugg" class="autocomplete-list"></ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="tripStops" class="route-points"></div>
+                                <div class="route-point">
+                                    <span class="route-dot"><i class="fa-solid fa-location-dot text-danger"></i></span>
+                                    <div class="field">
+                                        <div class="autocomplete">
+                                            <input type="text" id="tripDest" class="input" placeholder="Destino (digite e selecione)" autocomplete="off" aria-label="Destino" required>
+                                            <ul id="tripDestSugg" class="autocomplete-list"></ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-ghost btn-sm" style="align-self: flex-start; margin-left: 30px;" onclick="addTripStop()"><i class="fa-solid fa-plus"></i> Adicionar parada</button>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label for="tripToll">Pedágios previstos (R$)</label>
+                            <input type="number" name="toll_cost" id="tripToll" min="0" step="0.01" placeholder="0,00">
+                        </div>
+                        <div class="field">
+                            <label for="tripNotes">Observações</label>
+                            <input type="text" name="notes" id="tripNotes" maxlength="1000" placeholder="Carga, cliente, instruções...">
+                        </div>
+                    </div>
+
+                    <div class="stack" style="gap: 12px;">
+                        <div id="tripMap" class="map rounded" style="height: 420px;"></div>
+                        <div id="tripRouteSummary"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span class="modal-footer-note"><span class="req">*</span> Campos obrigatórios</span>
+                <button type="button" class="btn btn-ghost" onclick="closeModal('tripModal')">Cancelar</button>
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i> Salvar viagem</button>
+            </div>
+        </form>
+    </div>
+</div>

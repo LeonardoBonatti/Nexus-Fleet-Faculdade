@@ -1,0 +1,56 @@
+<!-- documentos.html — RF13 -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Documentos dos veículos</h1>
+        <p class="page-subtitle">Licenciamento, seguro, IPVA e outros documentos. O gestor é notificado 30 dias antes do vencimento.</p>
+    </div>
+    <div class="page-actions">
+        <button class="btn btn-primary" data-roles="admin,gestor" onclick="openDocumentModal()"><i class="fa-solid fa-plus"></i> Novo documento</button>
+    </div>
+</div>
+
+<div class="stack">
+    <div class="grid grid-4">
+        <div class="kpi tone-danger">
+            <div class="kpi-top"><span class="kpi-label">Vencidos</span><span class="kpi-icon"><i class="fa-solid fa-triangle-exclamation"></i></span></div>
+            <div class="kpi-value" id="docExpired">—</div>
+        </div>
+        <div class="kpi tone-warning">
+            <div class="kpi-top"><span class="kpi-label">Vencem em 30 dias</span><span class="kpi-icon"><i class="fa-regular fa-clock"></i></span></div>
+            <div class="kpi-value" id="docExpiring">—</div>
+        </div>
+        <div class="kpi tone-success">
+            <div class="kpi-top"><span class="kpi-label">Em dia</span><span class="kpi-icon"><i class="fa-solid fa-circle-check"></i></span></div>
+            <div class="kpi-value" id="docValid">—</div>
+        </div>
+        <div class="kpi">
+            <div class="kpi-top"><span class="kpi-label">Custos do ano</span><span class="kpi-icon"><i class="fa-solid fa-wallet"></i></span></div>
+            <div class="kpi-value" id="docCost">—</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Documentos</div>
+            <div class="search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" id="tableSearch" placeholder="Buscar por placa, tipo ou emissor" aria-label="Buscar documentos">
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Veículo</th>
+                        <th>Documento</th>
+                        <th>Vencimento</th>
+                        <th>Situação</th>
+                        <th class="num">Custo</th>
+                        <th class="actions"></th>
+                    </tr>
+                </thead>
+                <tbody id="docLogBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>

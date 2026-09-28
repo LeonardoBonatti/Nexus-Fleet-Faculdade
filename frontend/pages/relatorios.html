@@ -1,0 +1,119 @@
+<!-- relatorios.html — RF08 / RF15 -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Relatório de custos por veículo</h1>
+        <p class="page-subtitle">Combustível, manutenção, pedágios e multas no período: <strong id="repPeriodLabel">—</strong></p>
+    </div>
+</div>
+
+<div class="stack">
+    <div class="card">
+        <div class="card-body">
+            <div class="filters">
+                <div class="field">
+                    <label for="repStart">De</label>
+                    <input type="date" id="repStart">
+                </div>
+                <div class="field">
+                    <label for="repEnd">Até</label>
+                    <input type="date" id="repEnd">
+                </div>
+                <div class="field" style="min-width: 240px;">
+                    <label for="repVehicle">Veículo</label>
+                    <select id="repVehicle"></select>
+                </div>
+                <div class="segmented" id="repPresets" style="margin-bottom: 3px;">
+                    <button type="button" data-preset="month" class="active">Mês atual</button>
+                    <button type="button" data-preset="last">Mês anterior</button>
+                    <button type="button" data-preset="quarter">Últimos 3 meses</button>
+                    <button type="button" data-preset="year">Ano</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-4">
+        <div class="kpi">
+            <div class="kpi-top"><span class="kpi-label">Custo total</span><span class="kpi-icon"><i class="fa-solid fa-sack-dollar"></i></span></div>
+            <div class="kpi-value" id="repTotal">—</div>
+            <div class="kpi-meta" id="repTotalInfo"></div>
+        </div>
+        <div class="kpi tone-info">
+            <div class="kpi-top"><span class="kpi-label">Combustível</span><span class="kpi-icon"><i class="fa-solid fa-gas-pump"></i></span></div>
+            <div class="kpi-value" id="repFuel">—</div>
+            <div class="kpi-meta" id="repFuelInfo"></div>
+        </div>
+        <div class="kpi tone-warning">
+            <div class="kpi-top"><span class="kpi-label">Manutenção</span><span class="kpi-icon"><i class="fa-solid fa-screwdriver-wrench"></i></span></div>
+            <div class="kpi-value" id="repMaint">—</div>
+        </div>
+        <div class="kpi tone-danger">
+            <div class="kpi-top"><span class="kpi-label">Pedágios e multas</span><span class="kpi-icon"><i class="fa-solid fa-road"></i></span></div>
+            <div class="kpi-value" id="repTollsFines">—</div>
+            <div class="kpi-meta" id="repTollsFinesInfo"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <div class="card-title">Composição do custo por veículo</div>
+                <div class="card-subtitle">Até 10 veículos com maior custo no período</div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="chart-box" id="repChartBox"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Custos por veículo</div>
+        </div>
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Veículo</th>
+                        <th class="num">Combustível</th>
+                        <th class="num">Manutenção</th>
+                        <th class="num">Pedágios</th>
+                        <th class="num">Multas</th>
+                        <th class="num">Total</th>
+                        <th class="num">Km em viagens</th>
+                        <th class="num">Custo/km</th>
+                    </tr>
+                </thead>
+                <tbody id="repBody"></tbody>
+                <tfoot id="repFoot"></tfoot>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <div class="card-title">Lançamentos do período</div>
+                <div class="card-subtitle" id="repDetailCount"></div>
+            </div>
+            <div class="search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" id="repDetailSearch" placeholder="Buscar lançamento" aria-label="Buscar lançamento">
+            </div>
+        </div>
+        <div class="table-wrap" style="max-height: 480px; overflow: auto;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Categoria</th>
+                        <th>Placa</th>
+                        <th>Descrição</th>
+                        <th class="num">Valor</th>
+                    </tr>
+                </thead>
+                <tbody id="repDetailBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>

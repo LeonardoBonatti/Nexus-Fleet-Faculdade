@@ -1,0 +1,30 @@
+<!-- assistente.html -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Assistente</h1>
+        <p class="page-subtitle">Pergunte sobre gastos, consumo, manutenções e prazos. As respostas usam os dados da sua conta.</p>
+    </div>
+</div>
+
+<div class="card chat">
+    <div class="chat-chips">
+        <button type="button" class="chip" data-question="Me dê um resumo geral"><i class="fa-solid fa-list-check"></i> Resumo geral</button>
+        <button type="button" class="chip" data-question="Quanto gastei este mês?"><i class="fa-solid fa-wallet"></i> Gasto do mês</button>
+        <button type="button" class="chip" data-question="Qual o veículo mais econômico?"><i class="fa-solid fa-gauge-high"></i> Mais econômico</button>
+        <button type="button" class="chip" data-question="Qual veículo dá mais gasto?"><i class="fa-solid fa-sack-dollar"></i> Maior custo</button>
+        <button type="button" class="chip" data-question="Algum veículo precisa de revisão?"><i class="fa-solid fa-stethoscope"></i> Precisa de revisão?</button>
+        <button type="button" class="chip" data-question="Quais os próximos prazos da agenda?"><i class="fa-regular fa-calendar"></i> Próximos prazos</button>
+    </div>
+
+    <div id="aiChatBox" class="chat-messages" aria-live="polite">
+        <div class="chat-msg chat-bot">
+            <div class="chat-avatar"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+            <div class="chat-bubble">Olá! Posso analisar gastos, consumo, manutenções e prazos da sua frota. Escolha uma sugestão acima ou digite sua pergunta.</div>
+        </div>
+    </div>
+
+    <div class="chat-composer">
+        <input type="text" id="aiChatInput" maxlength="300" placeholder="Pergunte algo sobre a sua frota..." aria-label="Pergunta para o assistente">
+        <button id="aiChatSend" class="btn btn-primary" aria-label="Enviar"><i class="fa-solid fa-paper-plane"></i> <span>Enviar</span></button>
+    </div>
+</div>

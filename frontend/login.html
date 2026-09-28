@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar | NexusFleet</title>
+    <meta name="theme-color" content="#0b1220">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232563eb'/%3E%3Cpath d='M9 22V10h3l8 8v-8h3v12h-3l-8-8v8z' fill='white'/%3E%3C/svg%3E">
+
+    <script>
+        // Se já existe um token válido, vai direto para o painel
+        (function () {
+            try {
+                const token = localStorage.getItem('fcs_auth');
+                const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+                if (!payload.exp || payload.exp * 1000 > Date.now()) window.location.replace('index.html');
+            } catch (e) { /* sem sessão */ }
+        })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <script>
+        if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+    </script>
+
+    <div class="auth">
+        <!-- ================= Painel institucional ================= -->
+        <aside class="auth-aside">
+            <div class="auth-brand">
+                <div class="brand-mark"><i class="fa-solid fa-route"></i></div>
+                Nexus<span>Fleet</span>
+            </div>
+
+            <div>
+                <div class="auth-hero">
+                    <h1>Gestão de frota com <em>dados reais</em>, não com achismo.</h1>
+                    <p>Controle abastecimentos, manutenções, custos e prazos da sua frota em um só lugar — com indicadores calculados automaticamente.</p>
+                </div>
+
+                <div class="auth-features">
+                    <div class="auth-feature">
+                        <i class="fa-solid fa-gauge-high"></i>
+                        <div><strong>Consumo real</strong><span>km/L e custo por km por veículo</span></div>
+                    </div>
+                    <div class="auth-feature">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                        <div><strong>Manutenção preditiva</strong><span>Alertas por tempo e quilometragem</span></div>
+                    </div>
+                    <div class="auth-feature">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <div><strong>Previsão de gastos</strong><span>Projeção dos próximos meses</span></div>
+                    </div>
+                    <div class="auth-feature">
+                        <i class="fa-solid fa-diamond-turn-right"></i>
+                        <div><strong>Rotas e postos</strong><span>Planejamento com custo estimado</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="auth-preview" aria-hidden="true">
+                <div class="auth-preview-card"><small>Custo do mês</small><strong>R$ 18.420</strong><span class="up">▼ 6,2% vs mês anterior</span></div>
+                <div class="auth-preview-card"><small>Eficiência média</small><strong>11,8 km/L</strong><span class="up">▲ 0,4 km/L</span></div>
+                <div class="auth-preview-card"><small>Alertas</small><strong>3</strong><span style="font-size:11.5px;color:#fbbf24;">2 prazos próximos</span></div>
+            </div>
+
+            <div class="auth-foot">
+                <span>© 2026 NexusFleet · Projeto Acadêmico FAM</span>
+                <button type="button" onclick="openModal('aboutModal')">Quem somos</button>
+            </div>
+        </aside>
+
+        <!-- ================= Formulários ================= -->
+        <main class="auth-main">
+            <button type="button" class="icon-btn auth-theme" id="authTheme" aria-label="Alternar tema"><i class="fa-regular fa-moon"></i></button>
+
+            <div class="auth-card">
+                <div class="auth-brand auth-mobile-brand" style="color: var(--text);">
+                    <div class="brand-mark"><i class="fa-solid fa-route"></i></div>
+                    <span style="color: var(--text);">Nexus<span style="color: var(--primary);">Fleet</span></span>
+                </div>
+
+                <!-- LOGIN -->
+                <section id="viewLogin" class="auth-view">
+                    <h2>Bem-vindo de volta</h2>
+                    <p class="auth-lead">Entre com sua conta para acessar o painel da frota.</p>
+
+                    <form id="formLogin" class="auth-form" novalidate>
+                        <div id="loginMessage" class="alert alert-error" role="alert" hidden></div>
+
+                        <div class="field">
+                            <label for="loginEmail">E-mail</label>
+                            <div class="input-icon">
+                                <i class="fa-regular fa-envelope"></i>
+                                <input type="email" id="loginEmail" placeholder="voce@empresa.com" autocomplete="email" required>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="row-between">
+                                <label for="loginPassword" class="label">Senha</label>
+                                <button type="button" class="link-btn" style="font-size: 12.5px;" onclick="openModal('helpModal')">Esqueceu a senha?</button>
+                            </div>
+                            <div class="password-field input-icon">
+                                <i class="fa-solid fa-lock"></i>
+                                <input type="password" id="loginPassword" placeholder="Sua senha" autocomplete="current-password" required>
+                                <button type="button" class="password-toggle" data-target="loginPassword" aria-label="Mostrar senha"><i class="fa-regular fa-eye"></i></button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg btn-block"><span>Entrar</span> <i class="fa-solid fa-arrow-right"></i></button>
+                    </form>
+
+                    <p class="auth-switch">Ainda não tem conta? <button type="button" class="link-btn" onclick="switchView('viewRegister')">Criar conta grátis</button></p>
+                </section>
+
+                <!-- CADASTRO -->
+                <section id="viewRegister" class="auth-view" hidden>
+                    <h2>Crie sua conta</h2>
+                    <p class="auth-lead">Leva menos de um minuto para começar a controlar sua frota.</p>
+
+                    <form id="formRegister" class="auth-form" novalidate>
+                        <div id="registerMessage" class="alert alert-error" role="alert" hidden></div>
+
+                        <div class="field">
+                            <label for="regCompany">Nome da empresa</label>
+                            <div class="input-icon">
+                                <i class="fa-regular fa-building"></i>
+                                <input type="text" id="regCompany" placeholder="Transportadora Exemplo Ltda." maxlength="120" autocomplete="organization">
+                            </div>
+                            <span class="field-hint">Você será o administrador e poderá cadastrar gestores, motoristas e o financeiro.</span>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="field">
+                                <label for="regName">Nome completo</label>
+                                <input type="text" id="regName" placeholder="Carlos Silva" minlength="2" maxlength="100" autocomplete="name" required>
+                            </div>
+                            <div class="field">
+                                <label for="regCargo">Cargo <span class="opt">(opcional)</span></label>
+                                <input type="text" id="regCargo" placeholder="Gestor de Frota" maxlength="100">
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label for="regEmail">E-mail</label>
+                            <div class="input-icon">
+                                <i class="fa-regular fa-envelope"></i>
+                                <input type="email" id="regEmail" placeholder="voce@empresa.com" autocomplete="email" required>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label for="regPassword">Senha</label>
+                            <div class="password-field">
+                                <input type="password" id="regPassword" placeholder="Mínimo 8 caracteres" minlength="8" autocomplete="new-password" required>
+                                <button type="button" class="password-toggle" data-target="regPassword" aria-label="Mostrar senha"><i class="fa-regular fa-eye"></i></button>
+                            </div>
+                            <div class="strength" id="pwStrength" data-level="0" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+                            <span class="field-hint" id="pwStrengthLabel">Use letras maiúsculas, números e símbolos.</span>
+                        </div>
+
+                        <div class="field">
+                            <label for="regPasswordConfirm">Confirmar senha</label>
+                            <input type="password" id="regPasswordConfirm" placeholder="Repita a senha" minlength="8" autocomplete="new-password" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg btn-block"><span>Criar conta</span> <i class="fa-solid fa-arrow-right"></i></button>
+                    </form>
+
+                    <p class="auth-switch">Já tem conta? <button type="button" class="link-btn" onclick="switchView('viewLogin')">Entrar</button></p>
+                </section>
+
+                <details class="demo-accounts">
+                    <summary><i class="fa-solid fa-user-group"></i> Contas de demonstração (um login por perfil)</summary>
+                    <div class="demo-grid">
+                        <button type="button" onclick="fillDemo('admin@nexusfleet.com')"><strong>Administrador</strong><span>admin@nexusfleet.com</span></button>
+                        <button type="button" onclick="fillDemo('gestor@nexusfleet.com')"><strong>Gestor de frota</strong><span>gestor@nexusfleet.com</span></button>
+                        <button type="button" onclick="fillDemo('motorista@nexusfleet.com')"><strong>Motorista</strong><span>motorista@nexusfleet.com</span></button>
+                        <button type="button" onclick="fillDemo('financeiro@nexusfleet.com')"><strong>Financeiro</strong><span>financeiro@nexusfleet.com</span></button>
+                    </div>
+                    <span class="field-hint">Senha de todas: Senha@123 · disponíveis quando o servidor roda com SEED_DEMO=true.</span>
+                    <script>
+                        function fillDemo(email) {
+                            switchView('viewLogin');
+                            document.getElementById('loginEmail').value = email;
+                            document.getElementById('loginPassword').value = 'Senha@123';
+                            document.querySelector('#formLogin button[type="submit"]').focus();
+                        }
+                    </script>
+                </details>
+
+                <p class="auth-legal">Seus dados são protegidos com senha criptografada e sessão com expiração.</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Quem Somos -->
+    <div id="aboutModal" class="modal-overlay" onclick="if (event.target === this) closeModal('aboutModal')">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title" id="aboutTitle"><i class="fa-solid fa-graduation-cap text-primary"></i> Quem somos</h3>
+                    <p class="modal-subtitle">Projeto Acadêmico — Faculdade de Americana (FAM)</p>
+                </div>
+                <button class="btn-icon" onclick="closeModal('aboutModal')" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted" style="margin-bottom: 16px;">O <strong style="color: var(--text);">NexusFleet</strong> foi desenvolvido para fins acadêmicos avaliativos como parte da exigência curricular, sob autoria dos alunos <strong style="color: var(--text);">Leonardo Bonatti</strong> e <strong style="color: var(--text);">João Emílio</strong>.</p>
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3674.3312015403063!2d-47.33230628448882!3d-22.753066338167385!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94c899c75bf669ff%3A0xc34cc5555417ad43!2sFaculdade%20de%20Americana!5e0!3m2!1spt-BR!2sbr!4v1712534567890!5m2!1spt-BR!2sbr" width="100%" height="200" style="border:0; border-radius: 10px;" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Mapa da Faculdade de Americana"></iframe>
+                <p class="text-muted" style="margin-top: 12px; font-size: 13px;"><i class="fa-solid fa-location-dot"></i> Av. Joaquim Bôer, 733 — Jardim Luciane, Americana - SP, 13477-360</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Ajuda -->
+    <div id="helpModal" class="modal-overlay" onclick="if (event.target === this) closeModal('helpModal')">
+        <div class="modal modal-sm" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title" id="helpTitle">Precisa de ajuda?</h3>
+                    <p class="modal-subtitle">Fale com os administradores do sistema para recuperar o acesso.</p>
+                </div>
+                <button class="btn-icon" onclick="closeModal('helpModal')" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="list">
+                <div class="list-item">
+                    <div class="list-icon success"><i class="fa-brands fa-whatsapp"></i></div>
+                    <div class="list-content"><div class="list-title">(19) 98203-4147</div><div class="list-sub">WhatsApp</div></div>
+                </div>
+                <div class="list-item">
+                    <div class="list-icon success"><i class="fa-brands fa-whatsapp"></i></div>
+                    <div class="list-content"><div class="list-title">(19) 99665-8075</div><div class="list-sub">WhatsApp</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+        function switchView(targetId) {
+            document.querySelectorAll('.auth-view').forEach(v => { v.hidden = v.id !== targetId; });
+            document.querySelectorAll('.auth-form .alert').forEach(m => { m.hidden = true; });
+            const firstInput = document.querySelector(`#${targetId} input`);
+            if (firstInput) firstInput.focus();
+        }
+
+        function showMessage(id, text, type = 'error') {
+            const el = document.getElementById(id);
+            el.className = `alert alert-${type}`;
+            el.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check'}"></i><span></span>`;
+            el.querySelector('span').textContent = text;
+            el.hidden = false;
+        }
+
+        function setLoading(form, loading, label) {
+            const btn = form.querySelector('button[type="submit"]');
+            const span = btn.querySelector('span');
+            if (!btn.dataset.label) btn.dataset.label = span.textContent;
+            btn.disabled = loading;
+            span.textContent = loading ? label : btn.dataset.label;
+        }
+
+        async function postJSON(url, body) {
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            const data = await res.json().catch(() => ({}));
+            return { ok: res.ok, data };
+        }
+
+        // LOGIN
+        document.getElementById('formLogin').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!EMAIL_REGEX.test(email)) return showMessage('loginMessage', 'Informe um e-mail válido.');
+            if (!password) return showMessage('loginMessage', 'Informe sua senha.');
+
+            setLoading(form, true, 'Entrando...');
+            try {
+                const { ok, data } = await postJSON('/api/users/login', { email, password });
+                if (!ok) return showMessage('loginMessage', data.error || 'Não foi possível entrar.');
+
+                localStorage.setItem('fcs_auth', data.data.token);
+                localStorage.setItem('fcs_username', data.data.user.name);
+                localStorage.setItem('fcs_role', data.data.user.cargo || 'Colaborador');
+                window.location.replace('index.html');
+            } catch (err) {
+                showMessage('loginMessage', 'Erro de conexão com o servidor.');
+            } finally {
+                setLoading(form, false);
+            }
+        });
+
+        // CADASTRO
+        document.getElementById('formRegister').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const cargo = document.getElementById('regCargo').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirm = document.getElementById('regPasswordConfirm').value;
+
+            if (name.length < 2) return showMessage('registerMessage', 'Informe seu nome.');
+            if (!EMAIL_REGEX.test(email)) return showMessage('registerMessage', 'Informe um e-mail válido.');
+            if (password.length < 8) return showMessage('registerMessage', 'A senha deve ter no mínimo 8 caracteres.');
+            if (password !== confirm) return showMessage('registerMessage', 'As senhas não conferem.');
+
+            setLoading(form, true, 'Criando conta...');
+            try {
+                const { ok, data } = await postJSON('/api/users/register', { name, email, password, cargo, company_name: document.getElementById('regCompany').value.trim() });
+                if (!ok) return showMessage('registerMessage', data.error || 'Não foi possível criar a conta.');
+
+                form.reset();
+                updateStrength('');
+                switchView('viewLogin');
+                document.getElementById('loginEmail').value = email;
+                document.getElementById('loginPassword').focus();
+                showMessage('loginMessage', 'Conta criada com sucesso! Faça login para continuar.', 'success');
+            } catch (err) {
+                showMessage('registerMessage', 'Erro de conexão com o servidor.');
+            } finally {
+                setLoading(form, false);
+            }
+        });
+
+        // Força da senha
+        function updateStrength(value) {
+            let level = 0;
+            if (value.length >= 8) level++;
+            if (/[A-Z]/.test(value) && /[a-z]/.test(value)) level++;
+            if (/\d/.test(value)) level++;
+            if (/[^A-Za-z0-9]/.test(value) || value.length >= 12) level++;
+            if (!value) level = 0;
+            document.getElementById('pwStrength').dataset.level = level;
+            const labels = ['Use letras maiúsculas, números e símbolos.', 'Senha fraca', 'Senha razoável', 'Senha boa', 'Senha forte'];
+            document.getElementById('pwStrengthLabel').textContent = labels[level];
+        }
+        document.getElementById('regPassword').addEventListener('input', e => updateStrength(e.target.value));
+
+        // Mostrar/ocultar senha
+        document.querySelectorAll('.password-toggle').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const input = document.getElementById(btn.dataset.target);
+                const show = input.type === 'password';
+                input.type = show ? 'text' : 'password';
+                btn.innerHTML = `<i class="fa-regular ${show ? 'fa-eye-slash' : 'fa-eye'}"></i>`;
+                btn.setAttribute('aria-label', show ? 'Ocultar senha' : 'Mostrar senha');
+            });
+        });
+
+        // Tema
+        const themeBtn = document.getElementById('authTheme');
+        const syncTheme = () => {
+            themeBtn.innerHTML = document.body.classList.contains('dark-mode') ? '<i class="fa-regular fa-sun"></i>' : '<i class="fa-regular fa-moon"></i>';
+        };
+        themeBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+            syncTheme();
+        });
+        syncTheme();
+
+        // Modais
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') ['aboutModal', 'helpModal'].forEach(closeModal);
+        });
+    </script>
+</body>
+</html>

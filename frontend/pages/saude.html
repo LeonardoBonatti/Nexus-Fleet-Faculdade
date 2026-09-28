@@ -1,0 +1,34 @@
+<!-- saude.html -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Saúde da frota</h1>
+        <p class="page-subtitle">Vida útil estimada de óleo, pneus e freios com base no tempo e na quilometragem desde a última manutenção.</p>
+    </div>
+</div>
+
+<div class="stack">
+    <div class="grid grid-3">
+        <button class="kpi tone-success" data-active-filter="ok" onclick="filterHealthCards('ok')">
+            <div class="kpi-top"><span class="kpi-label">Em dia</span><span class="kpi-icon"><i class="fa-solid fa-circle-check"></i></span></div>
+            <div class="kpi-value" id="saudeOkCount">—</div>
+            <div class="kpi-meta">Nenhuma intervenção necessária</div>
+        </button>
+        <button class="kpi tone-warning" data-active-filter="warn" onclick="filterHealthCards('warn')">
+            <div class="kpi-top"><span class="kpi-label">Atenção</span><span class="kpi-icon"><i class="fa-solid fa-circle-exclamation"></i></span></div>
+            <div class="kpi-value" id="saudeWarnCount">—</div>
+            <div class="kpi-meta">Algum componente abaixo de 65%</div>
+        </button>
+        <button class="kpi tone-danger" data-active-filter="crit" onclick="filterHealthCards('crit')">
+            <div class="kpi-top"><span class="kpi-label">Crítico</span><span class="kpi-icon"><i class="fa-solid fa-triangle-exclamation"></i></span></div>
+            <div class="kpi-value" id="saudeCritCount">—</div>
+            <div class="kpi-meta">Algum componente abaixo de 30%</div>
+        </button>
+    </div>
+
+    <div class="health-grid" id="healthReportsContainer"></div>
+
+    <div class="callout">
+        <i class="fa-solid fa-circle-info"></i>
+        <span>Intervalos de referência: óleo a cada 6 meses ou 10.000 km · pneus a cada 2 anos ou 40.000 km · freios a cada 1 ano ou 30.000 km. Uma "Revisão geral" renova todos os componentes. Clique nos indicadores acima para filtrar.</span>
+    </div>
+</div>

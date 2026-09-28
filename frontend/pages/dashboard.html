@@ -1,0 +1,118 @@
+<!-- dashboard.html -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title" id="dashGreeting">Visão geral</h1>
+        <p class="page-subtitle" id="dashDate">Indicadores calculados a partir dos dados da sua frota.</p>
+    </div>
+    <div class="page-actions">
+        <button class="btn btn-secondary" id="btnExportPDF" onclick="exportDashboardToPDF()"><i class="fa-regular fa-file-pdf"></i> Exportar PDF</button>
+        <button class="btn btn-primary" onclick="navigateTo('abastecimento')"><i class="fa-solid fa-plus"></i> Novo lançamento</button>
+    </div>
+</div>
+
+<div class="stack">
+    <div class="grid grid-4">
+        <button class="kpi" onclick="navigateTo('financeiro')">
+            <div class="kpi-top">
+                <span class="kpi-label">Custo do mês</span>
+                <span class="kpi-icon"><i class="fa-solid fa-wallet"></i></span>
+            </div>
+            <div class="kpi-value" id="dashTotalCost">—</div>
+            <div class="kpi-meta" id="dashCostTrend">Carregando...</div>
+        </button>
+
+        <button class="kpi tone-success" onclick="navigateTo('comparador')">
+            <div class="kpi-top">
+                <span class="kpi-label">Eficiência média</span>
+                <span class="kpi-icon"><i class="fa-solid fa-gauge-high"></i></span>
+            </div>
+            <div class="kpi-value" id="dashEfficiency">—</div>
+            <div class="kpi-meta" id="dashEfficiencyInfo">Carregando...</div>
+        </button>
+
+        <button class="kpi tone-violet" onclick="navigateTo('veiculos')">
+            <div class="kpi-top">
+                <span class="kpi-label">Frota ativa</span>
+                <span class="kpi-icon"><i class="fa-solid fa-car-side"></i></span>
+            </div>
+            <div class="kpi-value" id="dashFleet">—</div>
+            <div class="kpi-meta" id="dashFleetInfo">Carregando...</div>
+        </button>
+
+        <button class="kpi tone-danger" onclick="navigateTo('diagnostico')">
+            <div class="kpi-top">
+                <span class="kpi-label">Alertas ativos</span>
+                <span class="kpi-icon"><i class="fa-solid fa-triangle-exclamation"></i></span>
+            </div>
+            <div class="kpi-value" id="dashAlertsCount">—</div>
+            <div class="kpi-meta" id="dashAlertsInfo">Carregando...</div>
+        </button>
+    </div>
+
+    <div class="grid grid-main">
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Custos por categoria</div>
+                    <div class="card-subtitle">Últimos 12 meses</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-box"><canvas id="dashboardChart" aria-label="Gráfico de custos mensais por categoria" role="img"></canvas></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Distribuição de custos</div>
+                    <div class="card-subtitle">Acumulado do ano</div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-box sm"><canvas id="dashCostSplit" aria-label="Distribuição dos custos" role="img"></canvas></div>
+                <div class="list" id="dashCostSplitLegend" style="margin-top: 12px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-main">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Últimos lançamentos</div>
+                <button class="card-link" onclick="navigateTo('historico')">Ver histórico <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Veículo</th>
+                            <th>Tipo</th>
+                            <th class="num">Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dashRecentBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="stack">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Alertas de manutenção</div>
+                    <button class="card-link" onclick="navigateTo('diagnostico')">Ver todos <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+                <div class="list" id="dashAlertsList"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Próximos prazos</div>
+                    <button class="card-link" onclick="navigateTo('agenda')">Agenda <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+                <div class="list" id="dashRemindersList"></div>
+            </div>
+        </div>
+    </div>
+</div>

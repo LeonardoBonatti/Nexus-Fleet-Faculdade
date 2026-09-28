@@ -1,0 +1,133 @@
+<!-- integracao_mapas.html -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Rotas</h1>
+        <p class="page-subtitle">Planeje viagens com distância, tempo e custo estimado usando o consumo real do veículo.</p>
+    </div>
+    <div class="page-actions">
+        <button class="btn btn-secondary" onclick="openModal('newAddressModal')"><i class="fa-regular fa-bookmark"></i> Salvar endereço</button>
+    </div>
+</div>
+
+<div class="grid grid-side">
+    <div class="stack" style="align-self: start;">
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Planejar rota</div>
+                    <div class="card-subtitle">Digite e selecione um endereço da lista, ou use o catálogo.</div>
+                </div>
+            </div>
+            <form id="routingForm" class="card-body" novalidate>
+                <div class="form-grid cols-1">
+                    <div class="field">
+                        <label for="routeOrigin">Origem<span class="req">*</span></label>
+                        <div class="row" style="gap: 6px;">
+                            <div class="autocomplete input-icon" style="flex: 1;">
+                                <i class="fa-solid fa-circle-dot text-primary"></i>
+                                <input type="text" id="routeOrigin" class="input" placeholder="Endereço de partida" autocomplete="off" required>
+                                <ul id="originSugg" class="autocomplete-list"></ul>
+                            </div>
+                            <button type="button" class="btn btn-secondary" style="width: 40px; padding: 0;" title="Escolher do catálogo" onclick="openCatalog('routeOrigin')"><i class="fa-regular fa-address-book"></i></button>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="routeDest">Destino<span class="req">*</span></label>
+                        <div class="row" style="gap: 6px;">
+                            <div class="autocomplete input-icon" style="flex: 1;">
+                                <i class="fa-solid fa-location-dot text-danger"></i>
+                                <input type="text" id="routeDest" class="input" placeholder="Endereço de destino" autocomplete="off" required>
+                                <ul id="destSugg" class="autocomplete-list"></ul>
+                            </div>
+                            <button type="button" class="btn btn-secondary" style="width: 40px; padding: 0;" title="Escolher do catálogo" onclick="openCatalog('routeDest')"><i class="fa-regular fa-address-book"></i></button>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="routeVehicle">Veículo<span class="req">*</span></label>
+                        <select id="routeVehicle" required></select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-block"><i class="fa-solid fa-diamond-turn-right"></i> Calcular rota</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card" id="routeResult" hidden></div>
+    </div>
+
+    <div class="card">
+        <div id="routingMap" class="map rounded" style="height: 640px;"></div>
+    </div>
+</div>
+
+<!-- Modal: salvar endereço -->
+<div id="newAddressModal" class="modal-overlay">
+    <div class="modal modal-lg" role="dialog" aria-modal="true" aria-labelledby="newAddressTitle">
+        <form id="addressBookFormStructured" novalidate>
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title" id="newAddressTitle">Salvar endereço no catálogo</h3>
+                    <p class="modal-subtitle">Filiais, clientes e pontos de entrega usados com frequência.</p>
+                </div>
+                <button type="button" class="btn-icon" onclick="closeModal('newAddressModal')" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="field full">
+                        <label for="bookName">Nome do local<span class="req">*</span></label>
+                        <input type="text" name="bookName" id="bookName" placeholder="Ex.: Centro de distribuição Sul" required>
+                    </div>
+                    <div class="field">
+                        <label for="bookStreet">Logradouro<span class="req">*</span></label>
+                        <input type="text" name="bookStreet" id="bookStreet" placeholder="Avenida Brasil" required>
+                    </div>
+                    <div class="field">
+                        <label for="bookNumber">Número<span class="req">*</span></label>
+                        <input type="text" name="bookNumber" id="bookNumber" placeholder="1000" required>
+                    </div>
+                    <div class="field">
+                        <label for="bookNeighborhood">Bairro<span class="req">*</span></label>
+                        <input type="text" name="bookNeighborhood" id="bookNeighborhood" placeholder="Centro" required>
+                    </div>
+                    <div class="field">
+                        <label for="bookCity">Cidade<span class="req">*</span></label>
+                        <input type="text" name="bookCity" id="bookCity" placeholder="Americana" required>
+                    </div>
+                    <div class="field">
+                        <label for="bookState">UF<span class="req">*</span></label>
+                        <select name="bookState" id="bookState" required>
+                            <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option>
+                            <option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option>
+                            <option value="GO">GO</option><option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option>
+                            <option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option><option value="PR">PR</option>
+                            <option value="PE">PE</option><option value="PI">PI</option><option value="RJ">RJ</option><option value="RN">RN</option>
+                            <option value="RS">RS</option><option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
+                            <option value="SP" selected>SP</option><option value="SE">SE</option><option value="TO">TO</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ghost" onclick="closeModal('newAddressModal')">Cancelar</button>
+                <button type="submit" class="btn btn-primary"><i class="fa-regular fa-bookmark"></i> Salvar endereço</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: catálogo -->
+<div id="catalogModal" class="modal-overlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="catalogTitle">
+        <div class="modal-header">
+            <div>
+                <h3 class="modal-title" id="catalogTitle">Catálogo de endereços</h3>
+                <p class="modal-subtitle">Selecione um endereço para usar na rota.</p>
+            </div>
+            <button type="button" class="btn-icon" onclick="closeModal('catalogModal')" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <div id="catalogList" class="catalog-list"></div>
+        </div>
+    </div>
+</div>
