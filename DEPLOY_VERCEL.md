@@ -121,6 +121,12 @@ em [`src/config/db.js`](src/config/db.js).
 
 ## Problemas comuns
 
+**"Nenhum ponto de entrada encontrado que importe o Express"**
+A Vercel detectou o projeto como "backend Express" e foi procurar um arquivo na
+raiz importando o express. Não é a arquitetura daqui (estáticos + funções em
+`api/`). O `vercel.json` já resolve com `"framework": null`; se o erro insistir,
+vá em Settings → General → *Framework Preset* e escolha **Other**.
+
 **"No Output Directory named 'frontend' found"**
 Settings → General → *Build & Development Settings* → *Output Directory* = `frontend`
 (override ativado) e redeploy.
