@@ -831,7 +831,7 @@ async function setupMapaPostos() {
     if (!document.getElementById('fleetMap') || typeof L === 'undefined') return;
 
     const map = L.map('fleetMap', { zoomControl: true }).setView([-22.8, -47.15], 11);
-    L.tileLayer(tileLayerUrl(), { attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19 }).addTo(map);
+    L.tileLayer(tileLayerUrl(), { attribution: TILE_ATTRIBUTION, maxZoom: 19 }).addTo(map);
 
     const marker = (lat, lng, color) => L.circleMarker([lat, lng], { radius: 8, color: '#fff', weight: 2, fillColor: color, fillOpacity: 1 });
 

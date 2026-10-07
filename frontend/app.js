@@ -405,10 +405,15 @@ const DEFAULT_STATIONS = [
     { lat: -22.9300, lng: -47.0200, name: 'Shell Valinhos (Rodovia)', gas: 5.62, eta: 4.12, die: 6.12 }
 ];
 
+// Imagens do mapa: servidor oficial do OpenStreetMap, sem chave de acesso.
+// (O CARTO, usado antes, passou a exigir API key e os blocos vinham marcados.)
+// No tema escuro os blocos são invertidos por CSS — ver .leaflet-tile-pane em
+// styles.css — para não depender de um segundo provedor.
+const TILE_LAYER_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+const TILE_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+
 function tileLayerUrl() {
-    return document.body.classList.contains('dark-mode')
-        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-        : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+    return TILE_LAYER_URL;
 }
 
 // ==========================================

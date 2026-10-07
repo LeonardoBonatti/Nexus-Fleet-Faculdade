@@ -261,7 +261,7 @@ async function openTripModal(id = null) {
             try { tripForm.map.remove(); } catch (e) { /* mapa já removido da tela */ }
         }
         tripForm.map = L.map('tripMap').setView([-22.8, -47.2], 10);
-        L.tileLayer(tileLayerUrl(), { attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19 }).addTo(tripForm.map);
+        L.tileLayer(tileLayerUrl(), { attribution: TILE_ATTRIBUTION, maxZoom: 19 }).addTo(tripForm.map);
         tripForm.layer = L.layerGroup().addTo(tripForm.map);
         drawTripRoute();
     }, 200);
@@ -550,7 +550,7 @@ async function openTripDetail(id) {
         const mapEl = document.getElementById('tripDetailMap');
         if (!mapEl || typeof L === 'undefined') return;
         const map = L.map(mapEl, { zoomControl: false }).setView([-22.8, -47.2], 9);
-        L.tileLayer(tileLayerUrl(), { attribution: '&copy; OpenStreetMap &copy; CARTO' }).addTo(map);
+        L.tileLayer(tileLayerUrl(), { attribution: TILE_ATTRIBUTION }).addTo(map);
         const points = [
             { name: trip.origin_name, lat: trip.origin_lat, lng: trip.origin_lng, color: '#16a34a' },
             ...trip.stops.map(s => ({ ...s, color: '#f59e0b' })),
@@ -927,7 +927,7 @@ const track = { map: null, markers: {}, pathLayer: null, selected: null, timer: 
 
 async function setupRastreamento() {
     const map = L.map('trackMap').setView([-22.8, -47.2], 10);
-    L.tileLayer(tileLayerUrl(), { attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19 }).addTo(map);
+    L.tileLayer(tileLayerUrl(), { attribution: TILE_ATTRIBUTION, maxZoom: 19 }).addTo(map);
     Object.assign(track, { map, markers: {}, pathLayer: L.layerGroup().addTo(map), selected: null, vehicles: [], fitted: false });
 
     document.getElementById('trackSearch').addEventListener('input', renderTrackList);
