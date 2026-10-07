@@ -83,6 +83,36 @@ function createApp() {
 
     app.use(express.static(FRONTEND_DIR));
 
+    // Diagnóstico público. Fica ANTES do preparo do banco de propósito: é a
+    // única rota capaz de explicar por que a aplicação não consegue iniciar.
+    // Não expõe a connection string, apenas se ela existe e qual foi o erro.
+    app.get('/api/system/health', (req, res) => {
+        const configured = Boolean(
+            process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRES_PRISMA_URL
+        );
+        bootstrap()
+            .then(() => res.json({
+                status: 'ok',
+                database: 'ok',
+                database_url_configured: configured,
+                seed_demo: process.env.SEED_DEMO === 'true',
+                runtime: process.env.VERCEL ? 'vercel' : 'node',
+                uptime_seconds: Math.round(process.uptime()),
+                timestamp: new Date().toISOString()
+            }))
+            .catch(err => res.status(503).json({
+                status: 'error',
+                database: 'indisponivel',
+                database_url_configured: configured,
+                error_code: err.code || null,
+                error: String(err.message || err).slice(0, 300),
+                dica: configured
+                    ? 'A variável existe, mas a conexão falhou. Confira a connection string e se o banco Neon está ativo.'
+                    : 'Nenhuma variável de banco encontrada. Crie o Postgres em Vercel → Storage → Neon e faça um Redeploy.',
+                timestamp: new Date().toISOString()
+            }));
+    });
+
     // Garante que o esquema do banco existe antes de qualquer chamada da API.
     // O custo ocorre apenas no primeiro acesso de cada instância (cold start).
     app.use('/api', (req, res, next) => {
