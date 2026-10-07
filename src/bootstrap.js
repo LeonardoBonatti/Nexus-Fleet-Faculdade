@@ -9,18 +9,6 @@ const db = require('./config/db');
 const GLOBAL_KEY = '__nexusfleet_bootstrap__';
 const SEED_LOCK_ID = 728301456;
 
-// Banco sem nenhum usuário = publicação nova, ainda não utilizada.
-// Na dúvida devolve false: é melhor não carregar nada do que escrever
-// por cima de um banco em uso.
-async function isDatabaseEmpty() {
-    try {
-        const { get } = require('./database/query');
-        const row = await get(`SELECT COUNT(*) AS n FROM users`);
-        return Boolean(row) && Number(row.n) === 0;
-    } catch (err) {
-        return false;
-    }
-}
 
 function bootstrap() {
     const store = globalThis[GLOBAL_KEY] || (globalThis[GLOBAL_KEY] = {});
@@ -28,12 +16,12 @@ function bootstrap() {
     if (!store.promise) {
         store.promise = db.ensureReady()
             .then(async () => {
-                // A carga de demonstração roda quando SEED_DEMO=true OU quando o
-                // banco ainda está vazio (primeira publicação). Assim um deploy
-                // novo já nasce utilizável, sem depender de variável de ambiente.
-                // SEED_DEMO=false desliga de vez.
+                // A empresa de demonstração é ADICIONADA ao banco, numa empresa
+                // própria: ela não toca nos dados de quem já usa o sistema. E
+                // seedDemo() tem guarda própria — se a empresa já existir, não
+                // faz nada. Por isso pode ser chamada sempre.
+                // SEED_DEMO=false desliga, para depois da apresentação.
                 if (process.env.SEED_DEMO === 'false') return;
-                if (process.env.SEED_DEMO !== 'true' && !(await isDatabaseEmpty())) return;
 
                 try {
                     const { seedDemo } = require('./database/seed');
