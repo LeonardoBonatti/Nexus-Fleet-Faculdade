@@ -121,6 +121,12 @@ em [`src/config/db.js`](src/config/db.js).
 
 ## Problemas comuns
 
+**Login ou cadastro responde "A API não respondeu neste endereço (HTTP 404)"**
+A requisição não chegou a nenhuma função: é roteamento, não banco. Confira em
+Settings → Functions se `api/index.js` aparece na lista do último deploy, e em
+Settings → General se o *Framework Preset* está em **Other**. O `vercel.json` já
+cobre os dois modos de roteamento (rota curinga e rewrite com `__path`).
+
 **"Nenhum ponto de entrada encontrado que importe o Express"**
 A Vercel detectou o projeto como "backend Express" e foi procurar um arquivo na
 raiz importando o express. Não é a arquitetura daqui (estáticos + funções em

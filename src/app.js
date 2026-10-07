@@ -35,6 +35,27 @@ function createApp() {
     app.set('trust proxy', 1);
     app.disable('x-powered-by');
 
+    // A Vercel pode entregar a requisição à função perdendo o caminho original
+    // (acontece quando o roteamento vem de um rewrite: o Express receberia
+    // apenas "/api"). O vercel.json manda o caminho verdadeiro em "__path", e
+    // ele é restaurado aqui, antes de qualquer rota. Quando a URL original é
+    // preservada, "__path" não existe e nada muda.
+    app.use((req, res, next) => {
+        if (!req.url || req.url.indexOf('__path=') === -1) return next();
+        try {
+            const parsed = new URL(req.url, 'http://localhost');
+            const original = parsed.searchParams.get('__path');
+            if (original && original.startsWith('/api')) {
+                parsed.searchParams.delete('__path');
+                const query = parsed.searchParams.toString();
+                req.url = original + (query ? `?${query}` : '');
+            }
+        } catch (err) {
+            // URL malformada: segue com o que veio
+        }
+        next();
+    });
+
     // RNF03 — dados em trânsito: força HTTPS em produção (atrás do proxy da Vercel)
     app.use((req, res, next) => {
         const proto = req.headers['x-forwarded-proto'];
