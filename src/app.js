@@ -91,15 +91,32 @@ function createApp() {
             process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRES_PRISMA_URL
         );
         bootstrap()
-            .then(() => res.json({
-                status: 'ok',
-                database: 'ok',
-                database_url_configured: configured,
-                seed_demo: process.env.SEED_DEMO === 'true',
-                runtime: process.env.VERCEL ? 'vercel' : 'node',
-                uptime_seconds: Math.round(process.uptime()),
-                timestamp: new Date().toISOString()
-            }))
+            .then(async () => {
+                // Contagens simples: mostram de fora se a carga de demonstração
+                // entrou, sem precisar logar no sistema.
+                let conteudo = null;
+                try {
+                    const { get } = require('./database/query');
+                    const row = await get(
+                        `SELECT (SELECT COUNT(*) FROM users) AS usuarios,
+                                (SELECT COUNT(*) FROM vehicles) AS veiculos,
+                                (SELECT COUNT(*) FROM trips) AS viagens`
+                    );
+                    if (row) conteudo = { usuarios: row.usuarios, veiculos: row.veiculos, viagens: row.viagens };
+                } catch (err) {
+                    conteudo = null;
+                }
+                res.json({
+                    status: 'ok',
+                    database: 'ok',
+                    database_url_configured: configured,
+                    seed_demo: process.env.SEED_DEMO === 'true',
+                    conteudo,
+                    runtime: process.env.VERCEL ? 'vercel' : 'node',
+                    uptime_seconds: Math.round(process.uptime()),
+                    timestamp: new Date().toISOString()
+                });
+            })
             .catch(err => res.status(503).json({
                 status: 'error',
                 database: 'indisponivel',
