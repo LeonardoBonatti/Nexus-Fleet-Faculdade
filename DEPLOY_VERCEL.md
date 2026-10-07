@@ -36,14 +36,50 @@ Siga o [DEPLOY_GITHUB.md](DEPLOY_GITHUB.md). Repositório:
 
 ## 3. Criar o banco Postgres (Neon)
 
-1. No projeto da Vercel → aba **Storage** → **Create Database** → **Neon (Postgres)**.
-2. Escolha a região mais próxima (ex.: `Washington, D.C.` ou `São Paulo`, se disponível)
-   e o plano **Free**.
-3. Em **Connect Project**, selecione o projeto `Nexus-Fleet-Faculdade` e confirme.
+**Não é preciso criar tabela nenhuma.** O sistema monta as 19 tabelas e os índices
+sozinho, no primeiro acesso depois que o banco existir.
 
-A Vercel cria automaticamente as variáveis `DATABASE_URL` e `POSTGRES_URL` no projeto.
-**Não é preciso criar tabela nenhuma**: o sistema cria o esquema completo sozinho no
-primeiro acesso.
+### Caminho A — pelo painel da Vercel (recomendado)
+
+1. Abra **vercel.com** → clique no projeto **nexus-fleet-faculdade**.
+2. Clique na aba **Storage** (no topo, ao lado de Deployments, Analytics, Settings).
+3. Clique em **Create Database**.
+4. Aparece a lista de bancos. Em *Marketplace Database Providers*, escolha **Neon**
+   (aparece como "Neon — Serverless Postgres") e clique em **Continue**.
+5. Aceite os termos do provedor, se ele pedir.
+6. Preencha:
+   - **Plan / Plano**: `Free`
+   - **Region / Região**: `Washington, D.C. (iad1)` — a mesma do deploy. Se houver
+     `São Paulo (gru1)`, melhor ainda.
+   - **Database Name**: `nexusfleet` (ou o que preferir)
+7. Clique em **Create**.
+8. Na tela seguinte, **Connect to Project**: marque o projeto
+   `nexus-fleet-faculdade` e os três ambientes — **Production**, **Preview** e
+   **Development**. Confirme.
+
+Pronto: a Vercel injeta `DATABASE_URL` (e algumas variantes) nas variáveis do projeto.
+
+### Caminho B — direto no Neon (se o Caminho A travar)
+
+1. Crie uma conta em **https://neon.tech** (dá para entrar com o GitHub).
+2. **Create project** → plano Free → região mais próxima → **Create**.
+3. Na tela do projeto, procure **Connection string** e copie a versão
+   **Pooled connection** (o endereço contém `-pooler`). Ela se parece com:
+   `postgresql://usuario:senha@ep-algo-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require`
+4. Na Vercel → projeto → **Settings** → **Environment Variables** → **Add**:
+   - **Key**: `DATABASE_URL`
+   - **Value**: a connection string copiada
+   - **Environments**: marque **Production**, **Preview** e **Development**
+   - **Save**
+
+### Conferindo
+
+Vercel → **Settings** → **Environment Variables**: `DATABASE_URL` precisa aparecer na
+lista. Se não aparecer, a conexão com o projeto não foi concluída — refaça o passo 8
+(ou use o Caminho B).
+
+> ⚠️ Variável de ambiente só vale para deploys feitos **depois** dela.
+> Sempre faça um Redeploy ao terminar (passo 5).
 
 ---
 
