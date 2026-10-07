@@ -42,7 +42,8 @@ sozinho, no primeiro acesso depois que o banco existir.
 ### Caminho A — pelo painel da Vercel (recomendado)
 
 1. Abra **vercel.com** → clique no projeto **nexus-fleet-faculdade**.
-2. Clique na aba **Storage** (no topo, ao lado de Deployments, Analytics, Settings).
+2. Na **barra lateral esquerda**, role até o fim e clique em **Storage**
+   (fica abaixo de *Integrations*, depois de Environment Variables, Domains e Connect).
 3. Clique em **Create Database**.
 4. Aparece a lista de bancos. Em *Marketplace Database Providers*, escolha **Neon**
    (aparece como "Neon — Serverless Postgres") e clique em **Continue**.
@@ -66,7 +67,7 @@ Pronto: a Vercel injeta `DATABASE_URL` (e algumas variantes) nas variáveis do p
 3. Na tela do projeto, procure **Connection string** e copie a versão
    **Pooled connection** (o endereço contém `-pooler`). Ela se parece com:
    `postgresql://usuario:senha@ep-algo-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require`
-4. Na Vercel → projeto → **Settings** → **Environment Variables** → **Add**:
+4. Na Vercel → projeto → **Environment Variables** (barra lateral esquerda) → **Add**:
    - **Key**: `DATABASE_URL`
    - **Value**: a connection string copiada
    - **Environments**: marque **Production**, **Preview** e **Development**
